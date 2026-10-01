@@ -4,7 +4,7 @@ Prefer overrides over source patches when KDE provides a stable override path. D
 
 - `kxmlgui/`: Dolphin menu and toolbar layout (`dolphinui.rc`). KXMLGUI picks the file with the higher `version` attribute, so a downstream copy must track the upstream version and be re-checked on every Dolphin update.
 - `servicemenus/`: Dolphin context menu actions as `.desktop` service menu files.
-- `translations/`: Ro-ASD specific downstream strings and `.po` files (`dolphin.po`). Prefer contributing translation fixes to KDE upstream first.
+- `translations/`: Ro-ASD translation domain `ro-kde-dolphin` (`ro-kde-dolphin.po`). Strings added by Ro-ASD patches use `i18nd("ro-kde-dolphin", ...)` so Dolphin's own catalog is never replaced. Packaging installs the compiled .mo to `/usr/share/locale/<lang>/LC_MESSAGES/ro-kde-dolphin.mo`. Fixes to existing Dolphin strings go to KDE upstream.
 
 Do not put here:
 
