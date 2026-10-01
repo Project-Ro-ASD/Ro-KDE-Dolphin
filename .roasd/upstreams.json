@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "workspace": ".work/upstream",
+  "projects": {
+    "dolphin": {
+      "url": "https://invent.kde.org/system/dolphin.git",
+      "purpose": "Dolphin application: main window, views, panels, toolbar, menus and status bar UI"
+    },
+    "dolphin-plugins": {
+      "url": "https://invent.kde.org/system/dolphin-plugins.git",
+      "purpose": "Optional Dolphin plugins (version control integration, extra context menu actions)"
+    }
+  }
+}
