@@ -1,0 +1,82 @@
+From a9b0eb1cf60155eca1ece1f0a44d2cbdd1e9034e Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 1 Oct 2026 19:17:18 +0300
+Subject: [PATCH] Ro-ASD: taller details rows with compact tree indentation
+
+---
+ src/kitemviews/kstandarditemlistwidget.cpp | 22 +++++++++++++++-------
+ src/views/dolphinitemlistview.cpp          |  3 ++-
+ 2 files changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/src/kitemviews/kstandarditemlistwidget.cpp b/src/kitemviews/kstandarditemlistwidget.cpp
+index bbafa3afa..88ee1b72d 100644
+--- a/src/kitemviews/kstandarditemlistwidget.cpp
++++ b/src/kitemviews/kstandarditemlistwidget.cpp
+@@ -31,6 +31,13 @@
+ 
+ // #define KSTANDARDITEMLISTWIDGET_DEBUG
+ 
++// Ro-ASD: horizontal space per tree level in the details view. Upstream uses the row height,
++// which grows with the taller Ro-ASD rows; keep the indentation compact instead.
++static qreal roTreeIndentWidth(const KItemListStyleOption &option)
++{
++    return option.iconSize + 4 * option.padding;
++}
++
+ KStandardItemListWidgetInformant::KStandardItemListWidgetInformant()
+     : KItemListWidgetInformant()
+ {
+@@ -1054,9 +1061,9 @@ void KStandardItemListWidget::updateExpansionArea()
+         if (expandedParentsCount >= 0) {
+             const int widgetIconSize = styleOption().iconSize;
+             const qreal widgetHeight = size().height();
+-            const qreal inc = (widgetHeight - widgetIconSize) / 2;
+-            const qreal x = expandedParentsCount * widgetHeight + inc;
+-            const qreal y = inc;
++            const qreal indent = roTreeIndentWidth(styleOption());
++            const qreal x = expandedParentsCount * indent + (indent - widgetIconSize) / 2;
++            const qreal y = (widgetHeight - widgetIconSize) / 2;
+             if (layoutDirection() == Qt::LeftToRight) {
+                 const qreal leftPaddingWidth = m_highlightEntireRow ? leftPadding() : 0;
+                 m_expansionArea = QRectF(leftPaddingWidth + x, y, widgetIconSize, widgetIconSize);
+@@ -1501,8 +1508,9 @@ void KStandardItemListWidget::updateDetailsLayoutTextCache()
+     const qreal columnWidthInc = columnPadding(option);
+     qreal firstColumnInc = styleOption().iconSize;
+     if (m_supportsItemExpanding) {
+-        firstColumnInc += isLeftToRight ? (m_expansionArea.left() + m_expansionArea.right() + widgetHeight) / 2
+-                                        : ((size().width() - m_expansionArea.left()) + (size().width() - m_expansionArea.right()) + widgetHeight) / 2;
++        const qreal indent = roTreeIndentWidth(option);
++        firstColumnInc += isLeftToRight ? (m_expansionArea.left() + m_expansionArea.right() + indent) / 2
++                                        : ((size().width() - m_expansionArea.left()) + (size().width() - m_expansionArea.right()) + indent) / 2;
+     } else {
+         firstColumnInc += option.padding + (isLeftToRight ? leftPadding() : rightPadding());
+     }
+@@ -1671,9 +1679,9 @@ void KStandardItemListWidget::drawPixmap(QPainter *painter, const QPixmap &pixma
+ 
+ void KStandardItemListWidget::drawSiblingsInformation(QPainter *painter)
+ {
+-    const int siblingSize = size().height();
++    const int siblingSize = roTreeIndentWidth(styleOption());
+     const int x = (m_expansionArea.left() + m_expansionArea.right() - siblingSize) / 2;
+-    QRect siblingRect(x, 0, siblingSize, siblingSize);
++    QRect siblingRect(x, 0, siblingSize, size().height());
+ 
+     bool isItemSibling = true;
+ 
+diff --git a/src/views/dolphinitemlistview.cpp b/src/views/dolphinitemlistview.cpp
+index 937733b9f..af33157f4 100644
+--- a/src/views/dolphinitemlistview.cpp
++++ b/src/views/dolphinitemlistview.cpp
+@@ -244,7 +244,8 @@ void DolphinItemListView::updateGridSize()
+     }
+     case KFileItemListView::DetailsLayout: {
+         itemWidth = -1;
+-        itemHeight = padding * 2 + qMax(iconSize, option.fontMetrics.lineSpacing());
++        // Ro-ASD: taller rows as in the design; the extra space scales with the font.
++        itemHeight = padding * 2 + qMax(iconSize, option.fontMetrics.lineSpacing()) + option.fontMetrics.lineSpacing() * 3 / 4;
+         break;
+     }
+     default:
+-- 
+2.55.0
+
