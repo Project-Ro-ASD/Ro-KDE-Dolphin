@@ -1,0 +1,35 @@
+From ceabc5fbf900344c9f33294bd74abccd75b61d65 Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 1 Oct 2026 18:43:40 +0300
+Subject: [PATCH] Ro-ASD: center status text and hide disk space indicator
+
+---
+ src/statusbar/dolphinstatusbar.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/statusbar/dolphinstatusbar.cpp b/src/statusbar/dolphinstatusbar.cpp
+index 4b2bb6f0f..eaead16cc 100644
+--- a/src/statusbar/dolphinstatusbar.cpp
++++ b/src/statusbar/dolphinstatusbar.cpp
+@@ -63,6 +63,8 @@ DolphinStatusBar::DolphinStatusBar(QWidget *parent)
+     m_label = new KSqueezedTextLabel{contentsContainer};
+     m_label->setTextFormat(Qt::PlainText);
+     m_label->setTextInteractionFlags(Qt::TextBrowserInteraction | Qt::TextSelectableByKeyboard); // for accessibility but also to allow copy-pasting this text.
++    // Ro-ASD: centered status text.
++    m_label->setAlignment(Qt::AlignCenter);
+ 
+     // Initialize zoom slider's explanatory label
+     m_zoomLabel = new KSqueezedTextLabel(i18nc("Used as a noun, i.e. 'Here is the zoom level:'", "Zoom:"), contentsContainer);
+@@ -321,7 +323,8 @@ void DolphinStatusBar::updateMode()
+         break;
+     case GeneralSettings::EnumShowStatusBar::FullWidth:
+         setEnabled(true);
+-        m_spaceInfo->setShown(true);
++        // Ro-ASD: the full-width status bar shows only the centered text, no disk space indicator.
++        m_spaceInfo->setShown(false);
+         setVisible(true, WithAnimation);
+         break;
+     case GeneralSettings::EnumShowStatusBar::Disabled:
+-- 
+2.55.0
+

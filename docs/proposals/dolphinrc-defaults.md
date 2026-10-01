@@ -47,5 +47,5 @@ Read on a test machine:
 
 - Owner of system-wide defaults: this repository or `ro-asd-defaults`?
 - Shipping mechanism for view properties: they live in per-user xattrs, so `/etc/xdg` cannot provide them. Options: first-login script, `/etc/skel` seeding, or a small Dolphin patch that reads a system default.
-- Not solvable by settings, handled by later patches: status bar disk space indicator, row height and header style.
+- Not solvable by settings, handled by later patches: row height and header style.
 - Type column shows "Folder" untranslated for directories: comes from shared-mime-info, not Dolphin.
