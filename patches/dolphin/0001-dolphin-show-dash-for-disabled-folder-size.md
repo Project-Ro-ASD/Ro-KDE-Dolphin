@@ -7,7 +7,7 @@
   - src/kitemviews/kfileitemlistwidget.cpp
 - Layer: UI only. Changes the text shown in the size column; no KIO, file operation or admin logic is touched.
 - Reason (Ro-ASD): the design shows "—" in the size column for folders. Upstream shows an empty cell when folder sizes are disabled.
-- Requires: dolphinrc [ContentDisplay] DirectorySizeMode=None (see docs/proposals/dolphinrc-defaults.md). With other modes behavior is unchanged.
+- Requires: dolphinrc [ContentDisplay] DirectorySizeMode=None (built-in default since patch 0004, see docs/DEFAULTS.md). With other modes behavior is unchanged.
 - Override considered: yes. No setting or translation can put text into an empty cell.
 - Upstreamable: possibly, as an option. Not proposed yet.
 - Verification: built against v26.08.1 with cmake/ninja, ran build/bin/dolphin with DirectorySizeMode=None in details view; folders show "—", file sizes unchanged.
