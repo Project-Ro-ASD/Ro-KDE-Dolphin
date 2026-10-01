@@ -1,0 +1,86 @@
+From 78d676a8d377a5fb23a8a29f89f9ec2b121fea38 Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 1 Oct 2026 19:12:02 +0300
+Subject: [PATCH] Ro-ASD: built-in defaults for view and status bar
+
+---
+ src/settings/dolphin_contentdisplaysettings.kcfg        | 6 ++++--
+ src/settings/dolphin_directoryviewpropertysettings.kcfg | 9 ++++++---
+ src/settings/dolphin_generalsettings.kcfg               | 3 ++-
+ 3 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/src/settings/dolphin_contentdisplaysettings.kcfg b/src/settings/dolphin_contentdisplaysettings.kcfg
+index 6e8f8e9d5..dc0321111 100644
+--- a/src/settings/dolphin_contentdisplaysettings.kcfg
++++ b/src/settings/dolphin_contentdisplaysettings.kcfg
+@@ -19,7 +19,8 @@
+                     <label>Do not show any directory size</label>
+                 </choice>
+             </choices>
+-            <default>ContentCount</default>
++            <!-- Ro-ASD default: None (upstream: ContentCount) -->
++            <default>None</default>
+         </entry>
+         <entry name="RecursiveDirectorySizeLimit" type="UInt">
+             <label>Recursive directory size limit</label>
+@@ -27,7 +28,8 @@
+         </entry>
+         <entry name="UseShortRelativeDates" type="Bool">
+             <label>if true we use short relative dates, if not short dates</label>
+-            <default>true</default>
++            <!-- Ro-ASD default: false (upstream: true) -->
++            <default>false</default>
+         </entry>
+         <entry name="UsePermissionsFormat" type="Enum">
+             <label>Permissions style format</label>
+diff --git a/src/settings/dolphin_directoryviewpropertysettings.kcfg b/src/settings/dolphin_directoryviewpropertysettings.kcfg
+index 9719ba602..fbea15f64 100644
+--- a/src/settings/dolphin_directoryviewpropertysettings.kcfg
++++ b/src/settings/dolphin_directoryviewpropertysettings.kcfg
+@@ -24,7 +24,8 @@
+         <entry name="ViewMode" type="Int" >
+             <label context="@label">View Mode</label>
+             <whatsthis context="@info:whatsthis">This option controls the style of the view. Currently supported values include icons (0), details (1) and column (2) views.</whatsthis>
+-            <default code="true">DolphinView::IconsView</default>
++            <!-- Ro-ASD default: details view (upstream: DolphinView::IconsView) -->
++            <default code="true">DolphinView::DetailsView</default>
+         </entry>
+ 
+         <entry name="ZoomLevel" type="Int" >
+@@ -36,7 +37,8 @@
+         <entry name="PreviewsShown" type="Bool" >
+             <label context="@label">Previews shown</label>
+             <whatsthis context="@info:whatsthis">When this option is enabled, a preview of the file content is shown as an icon.</whatsthis>
+-            <default>true</default>
++            <!-- Ro-ASD default: false (upstream: true) -->
++            <default>false</default>
+         </entry>
+ 
+         <entry name="GroupedSorting" type="Bool" >
+@@ -76,7 +78,8 @@
+ 
+         <entry name="VisibleRoles" type="StringList">
+             <label context="@label">Visible roles</label>
+-            <default></default>
++            <!-- Ro-ASD default: Name, Modified, Size, Type (upstream: empty, code falls back to size and date) -->
++            <default>Details_modificationtime,Details_size,Details_type</default>
+         </entry>
+ 
+         <entry name="HeaderColumnWidths" type="IntList">
+diff --git a/src/settings/dolphin_generalsettings.kcfg b/src/settings/dolphin_generalsettings.kcfg
+index b29526d64..60fb40583 100644
+--- a/src/settings/dolphin_generalsettings.kcfg
++++ b/src/settings/dolphin_generalsettings.kcfg
+@@ -146,7 +146,8 @@
+                 <choice name="Disabled" />
+             </choices>
+             <label>Statusbar</label>
+-            <default>0</default>
++            <!-- Ro-ASD default: FullWidth (upstream: Small) -->
++            <default>FullWidth</default>
+             <emit signal="showStatusBarChanged" />
+         </entry>
+         <entry name="ShowZoomSlider" type="Bool">
+-- 
+2.55.0
+

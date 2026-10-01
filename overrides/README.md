@@ -9,6 +9,6 @@ Prefer overrides over source patches when KDE provides a stable override path. D
 Do not put here:
 
 - Kvantum, Klassy, color schemes or icon themes: Ro-Theme
-- system wide `dolphinrc` / `/etc/xdg` defaults and the shared Places list: ro-asd-defaults (agree with that repository before adding any Dolphin default here)
+- shared/generic KDE and Plasma defaults and the shared Places list: ro-asd-defaults. Dolphin-specific defaults belong to Ro-KDE-Dolphin and are built in as KCFG defaults (see docs/DEFAULTS.md), not shipped as /etc/xdg files.
 
 Do not copy whole upstream files when only one entry changes; keep the delta minimal and documented.
