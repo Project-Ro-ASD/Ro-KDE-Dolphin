@@ -16,12 +16,14 @@ Upstream reference: dolphin v26.08.1 (`src/settings/*.kcfg`, `src/views/viewprop
 
     [ContentDisplay]
     UseShortRelativeDates=false
+    DirectorySizeMode=None
 
 - ShowStatusBar=FullWidth: full-width status bar instead of the floating bubble
 - ShowZoomSlider=false: design has no zoom slider
 - HighlightEntireRow=true: selection fills the whole row
 - ExpandableFolders=true: folders open in place with a chevron
 - UseShortRelativeDates=false: absolute dates (1.10.2026 16:34) instead of "26 minutes ago"
+- DirectorySizeMode=None: no item count for folders; with patch 0001 the cell shows "—"
 
 ## 2. Global view properties
 
@@ -45,5 +47,5 @@ Read on a test machine:
 
 - Owner of system-wide defaults: this repository or `ro-asd-defaults`?
 - Shipping mechanism for view properties: they live in per-user xattrs, so `/etc/xdg` cannot provide them. Options: first-login script, `/etc/skel` seeding, or a small Dolphin patch that reads a system default.
-- Not solvable by settings, handled by later patches: folder size shown as "—", status bar disk space indicator, row height and header style.
+- Not solvable by settings, handled by later patches: status bar disk space indicator, row height and header style.
 - Type column shows "Folder" untranslated for directories: comes from shared-mime-info, not Dolphin.
