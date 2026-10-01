@@ -1,0 +1,21 @@
+# Ro-ASD downstream strings for Dolphin (translation domain: ro-kde-dolphin)
+msgid ""
+msgstr ""
+"Project-Id-Version: ro-kde-dolphin\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. Status bar: visible item count (patch 0003)
+msgid "1 item"
+msgid_plural "%1 items"
+msgstr[0] "%1 öğe"
+msgstr[1] "%1 öğe"
+
+#. Status bar: item count followed by selection count (patch 0003)
+msgid "%2, 1 selected"
+msgid_plural "%2, %1 selected"
+msgstr[0] "%2, %1 seçili"
+msgstr[1] "%2, %1 seçili"

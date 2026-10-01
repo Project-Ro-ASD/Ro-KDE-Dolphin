@@ -1,0 +1,56 @@
+From 6971389dcf57952c24f5797f73b17f338a7d7a5d Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 1 Oct 2026 19:03:06 +0300
+Subject: [PATCH] Ro-ASD: show item and selection count in status bar
+
+---
+ src/dolphinviewcontainer.cpp |  8 +++-----
+ src/views/dolphinview.cpp    | 13 +++++++++++++
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/src/dolphinviewcontainer.cpp b/src/dolphinviewcontainer.cpp
+index 968919b63..2b2e7c583 100644
+--- a/src/dolphinviewcontainer.cpp
++++ b/src/dolphinviewcontainer.cpp
+@@ -837,11 +837,9 @@ void DolphinViewContainer::slotItemsActivated(const KFileItemList &items)
+ 
+ void DolphinViewContainer::showItemInfo(const KFileItem &item)
+ {
+-    if (item.isNull()) {
+-        m_statusBar->setHoveredItemText(QString());
+-    } else {
+-        m_statusBar->setHoveredItemText(item.getStatusBarInfo());
+-    }
++    // Ro-ASD: keep the item/selection summary in the status bar while hovering items.
++    Q_UNUSED(item)
++    m_statusBar->setHoveredItemText(QString());
+ }
+ 
+ void DolphinViewContainer::closeFilterBar()
+diff --git a/src/views/dolphinview.cpp b/src/views/dolphinview.cpp
+index b92e038e2..e46c15c65 100644
+--- a/src/views/dolphinview.cpp
++++ b/src/views/dolphinview.cpp
+@@ -727,6 +727,19 @@ void DolphinView::requestStatusBarText()
+         m_statJobForStatusBarText->kill();
+     }
+ 
++    // Ro-ASD: status text shows the visible item count and the selection count, e.g. "12 öğe, 1 seçili".
++    // Strings live in the Ro-ASD translation domain "ro-kde-dolphin".
++    {
++        const int itemCount = m_model->count();
++        const int selectedCount = m_container->controller()->selectionManager()->selectedItems().count();
++        QString summary = i18ndp("ro-kde-dolphin", "1 item", "%1 items", itemCount);
++        if (selectedCount > 0) {
++            summary = i18ndp("ro-kde-dolphin", "%2, 1 selected", "%2, %1 selected", selectedCount, summary);
++        }
++        Q_EMIT statusBarTextChanged(summary);
++        return;
++    }
++
+     if (m_container->controller()->selectionManager()->hasSelection()) {
+         int folderCount = 0;
+         int fileCount = 0;
+-- 
+2.55.0
+
