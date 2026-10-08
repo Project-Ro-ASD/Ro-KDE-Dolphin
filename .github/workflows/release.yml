@@ -144,7 +144,7 @@ jobs:
       - name: Install and smoke test
         shell: bash
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           dnf install -y release-rpms/dolphin-[0-9]*.x86_64.rpm release-rpms/dolphin-libs-*.x86_64.rpm
           rpm -q dolphin dolphin-libs
           [[ "$(rpm -q --qf '%{RELEASE}' dolphin)" == *.roasd*.fc44 ]]
@@ -153,7 +153,9 @@ jobs:
           # Ro-ASD payload is present
           test -f /usr/share/kxmlgui5/dolphin/dolphinui.rc
           grep -q 'ro_go_back_forward' /usr/share/kxmlgui5/dolphin/dolphinui.rc
-          test -f /usr/share/locale/tr/LC_MESSAGES/ro-kde-dolphin.mo
+          # The fedora container image installs only English %lang files, so check the
+          # Turkish catalog in the package payload instead of on disk.
+          rpm -qlp release-rpms/dolphin-[0-9]*.x86_64.rpm | grep -x '/usr/share/locale/tr/LC_MESSAGES/ro-kde-dolphin.mo' > /dev/null
           [[ "$(rpm -qf /usr/share/kxmlgui5/dolphin/dolphinui.rc --qf '%{NAME}')" == "dolphin" ]]
           # Built-in defaults from patch 0004 are compiled in
           grep -q 'FullWidth' /usr/share/config.kcfg/dolphin_generalsettings.kcfg
