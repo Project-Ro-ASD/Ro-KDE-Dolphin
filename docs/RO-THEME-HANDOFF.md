@@ -17,11 +17,11 @@ Colors come from the Ro-Theme color schemes (`RoLight`, `RoDark`). The hex value
 Resolved:
 
 - RoDark zebra rows: `[Colors:View]` BackgroundAlternate is now 50,50,52 (was equal to BackgroundNormal); measured #2B2B2C / #323234 in the details view.
+- Selection no longer turns very light when the file list loses focus (`[ColorEffects:Inactive] Enable=false`, `ChangeSelectionColor=false`); checked with the release RPM on 2026-10-08.
 
 Open points reported to Ro-Theme (2026-10-08):
 
 - In the toolbar (Plasma Header group) Button equals Window, so the pill uses the fallback tone; a distinct header button tone would let it use the scheme color directly.
-- Selection turns very light when the file list loses focus (inactive palette / style). Ro-Theme set `[ColorEffects:Inactive] Enable=false` and `ChangeSelectionColor=false`; retest with the updated theme pending.
 - The palette values in the team message differ from the `.colors` files on main; the files are what Dolphin uses.
 
 ## 2. Qt style (widget drawing)
