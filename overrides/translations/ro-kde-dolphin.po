@@ -19,3 +19,7 @@ msgid "%2, 1 selected"
 msgid_plural "%2, %1 selected"
 msgstr[0] "%2, %1 seçili"
 msgstr[1] "%2, %1 seçili"
+
+#. Toolbar: grouped back/forward buttons (patch 0007)
+msgid "Back and Forward"
+msgstr "Geri ve İleri"
