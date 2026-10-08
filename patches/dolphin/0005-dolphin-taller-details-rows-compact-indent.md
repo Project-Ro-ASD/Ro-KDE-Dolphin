@@ -5,6 +5,7 @@
 - Fedora 44 package version checked: dolphin-26.08.1-1.fc44
 - Affected upstream files:
   - src/views/dolphinitemlistview.cpp (DolphinItemListView::updateGridSize, details layout)
+  - src/kitemviews/kstandarditemlistwidget.cpp (calculateDetailsLayoutItemSizeHints: same row height, see fix below)
   - src/kitemviews/kstandarditemlistwidget.cpp (updateExpansionArea, updateDetailsLayoutTextCache, drawSiblingsInformation)
 - Layer: UI layout only. No KIO, file operation or admin logic is touched.
 - Reason (Ro-ASD): the design uses details rows about twice the line height. Upstream ties tree indentation to the row height, so taller rows would double the indentation; indentation is fixed to icon size + 4 * padding (the upstream value at default row height).
@@ -13,3 +14,4 @@
 - Upstreamable: possibly as a "row spacing" option. Not proposed yet.
 - Verification: built against v26.08.1 + 0001-0004; row/line height ratio about 1.95 (design 39/20); text vertically centered; expanded folders indent one icon + 8 px per level.
 - Upgrade risk: medium. Four places in kstandarditemlistwidget.cpp; re-check expansion area and sibling drawing on the next Dolphin release.
+- Fix 2026-10-08: the per-row size hint still used the upstream height, so rows were laid out at the taller grid height but painted at the old height (gaps between rows: thin zebra bands, short selection, unclickable space). The size hint now uses the same formula as updateGridSize.
