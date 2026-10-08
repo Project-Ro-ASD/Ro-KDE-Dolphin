@@ -4,6 +4,7 @@
   "projects": {
     "dolphin": {
       "url": "https://invent.kde.org/system/dolphin.git",
+      "base_tag": "v26.08.1",
       "purpose": "Dolphin application: main window, views, panels, toolbar, menus and status bar UI"
     },
     "dolphin-plugins": {

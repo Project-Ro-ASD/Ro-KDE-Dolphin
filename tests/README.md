@@ -1,10 +1,17 @@
 # Tests
 
-Runtime smoke tests will be added as actual downstream patches and overrides appear.
+## check-patches.sh (CI job `patches`)
 
-First targets:
+    bash tests/check-patches.sh
 
-- patches in `patches/dolphin/` apply cleanly to the recorded upstream tag
+- clones upstream Dolphin at `base_tag` from `.roasd/upstreams.json`
+- applies every `patches/dolphin/*.patch` in order and stops at the first one that does not apply
+- checks the patched kcfg files, the toolbar override and the translation catalog
+
+When Fedora moves to a new Dolphin version: update `base_tag`, run this script, and refresh any patch that fails before rebuilding the package.
+
+## Not automated yet
+
 - Dolphin launches and opens a folder after package installation
-- modified menus, toolbar actions and context menu entries are present
+- toolbar, status bar and view changes are visible (checked by hand with screenshots so far)
 - basic file operations (copy, move, delete to trash) still work unchanged
