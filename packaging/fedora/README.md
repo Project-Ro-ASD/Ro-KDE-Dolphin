@@ -40,3 +40,14 @@ Verified 2026-10-08: dolphin-26.08.1-1.roasd1.fc44 built, installed over Fedora'
 2. Set `base_tag` in `.roasd/upstreams.json` to the matching upstream tag.
 3. Run `bash tests/check-patches.sh`; refresh any patch that fails and update its provenance note.
 4. Run `bash tests/check-spec.sh`, build locally, then release.
+
+## Release (Ro-Repo V2 producer)
+
+`.github/workflows/release.yml`, based on `Project-Ro-ASD/ro-Assist`:
+
+- trigger: tag `v<VERSION>` (component version) on main; `workflow_dispatch` = dry run (build and tests, no release)
+- Fedora 44 container: patch/spec checks, Source0 SHA256 check, `rpmbuild -ba`, rpmlint (advisory, as in Ro-Repo acceptance), clean install + smoke
+- publishes exactly `dolphin`, `dolphin-libs`, `dolphin-devel` (x86_64) and the SRPM; debuginfo/debugsource are not published because they are not in the Ro-Repo `package_names`
+- `SHA256SUMS`, `component-artifact-manifest-v1.json` (Ro-Repo schema), GitHub attestation, draft → verify → publish
+
+Requires GitHub release immutability to be enabled for this repository (Ro-Repo checks `immutable == true`).

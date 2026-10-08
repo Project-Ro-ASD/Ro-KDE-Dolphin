@@ -38,7 +38,7 @@ Do not move these responsibilities into this repository:
 - Every patch needs a provenance note based on docs/PATCH-PROVENANCE-TEMPLATE.md.
 - Do not commit build directories, cloned upstream trees, RPM outputs, .orig or .rej files.
 - Do not add install scripts that write into /usr or overwrite files owned by other packages.
-- Do not add a production RPM spec or release workflow until there is a concrete payload and ownership is known.
+- Production packaging is a Fedora package-name-preserving rebuild (see packaging/fedora/README.md). Release only through .github/workflows/release.yml; never commit signing keys, RPMs or release assets.
 
 ## Git workflow
 
