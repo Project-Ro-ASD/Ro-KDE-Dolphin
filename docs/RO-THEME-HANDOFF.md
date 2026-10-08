@@ -1,6 +1,6 @@
 # Ro-Theme handoff for the Dolphin design
 
-Status: open. Items below are part of the Ro-ASD Dolphin design but are drawn by the Qt style, color scheme, icon theme, fonts or KWin, not by Dolphin. They belong to Ro-Theme (see AGENTS.md ownership rules). Colors were sampled from the design mockups (2026-10-01).
+Status: open. Items below are part of the Ro-ASD Dolphin design but are drawn by the Qt style, color scheme, icon theme, fonts or KWin, not by Dolphin. They belong to Ro-Theme (see AGENTS.md ownership rules). Last checked against RoLight / RoDark on 2026-10-08.
 
 ## 1. Color scheme
 
@@ -14,11 +14,14 @@ Colors come from the Ro-Theme color schemes (`RoLight`, `RoDark`). The hex value
 | Button vs Window (Header group in the toolbar) | back/forward pill (patch 0007; falls back to window + 14 % text when equal) |
 | View background + 7 % text | icon / compact view cards (patches 0008, 0009) |
 
+Resolved:
+
+- RoDark zebra rows: `[Colors:View]` BackgroundAlternate is now 50,50,52 (was equal to BackgroundNormal); measured #2B2B2C / #323234 in the details view.
+- Selection no longer turns very light when the file list loses focus (`[ColorEffects:Inactive] Enable=false`, `ChangeSelectionColor=false`); checked with the release RPM on 2026-10-08.
+
 Open points reported to Ro-Theme (2026-10-08):
 
-- RoDark `[Colors:View]` BackgroundAlternate equals BackgroundNormal (43,43,44), so zebra rows are invisible in dark mode.
 - In the toolbar (Plasma Header group) Button equals Window, so the pill uses the fallback tone; a distinct header button tone would let it use the scheme color directly.
-- Selection turns very light when the file list loses focus (inactive palette / style); `ChangeSelectionColor=false` did not change it.
 - The palette values in the team message differ from the `.colors` files on main; the files are what Dolphin uses.
 
 ## 2. Qt style (widget drawing)
@@ -28,7 +31,6 @@ Open points reported to Ro-Theme (2026-10-08):
 - Places panel: selected item as filled accent rounded rect with bold text; no hover frame.
 - Details view header (`CE_Header`): no borders or column separators, same background as the view, text in primary color, sort arrow small.
 - Tree branches (`PE_IndicatorBranch`): chevron only (› closed, ˅ open), no dotted or solid tree lines.
-- Item hover: no "+" selection marker overlay in icon view (to be confirmed: may be a Dolphin setting rather than style).
 - Status bar: flat, separated by a 1 px top line.
 
 ## 3. Icons
@@ -44,10 +46,10 @@ Open points reported to Ro-Theme (2026-10-08):
 
 ## 5. Fonts and locale (not Dolphin)
 
-- Font: a clean sans similar to the mockups; size used for measurements was 10 pt-equivalent (text line ~20 px at 100 %).
+- Font: a clean sans similar to the mockups. Dolphin draws file names 3 pt larger than the system font (patch 0011); Ro-Theme only needs to set the system font.
 - Dates show `1.10.2026`; the design shows `01.10.2026`. Comes from the system locale format (ro-asd-defaults).
 - Some MIME type names are untranslated in Turkish ("Folder", "Plain text document"); they come from shared-mime-info, not Dolphin.
 
 ## Already handled in Ro-KDE-Dolphin
 
-Toolbar layout, defaults, folder size "—", status bar layout and text, row height and tree indent, secondary column gray (patches 0001–0006, overrides/kxmlgui).
+Toolbar layout and back/forward pill, defaults, folder size "—", status bar layout and text, row height and tree indent, secondary column gray, icon and compact view cards, no "+" selection marker on hover, larger file names (patches 0001–0011, overrides/kxmlgui).
