@@ -4,20 +4,22 @@ Status: open. Items below are part of the Ro-ASD Dolphin design but are drawn by
 
 ## 1. Color scheme
 
-| Role | Light | Dark | Used for |
-| --- | --- | --- | --- |
-| Accent / Highlight | #0081ff | #0081ff | selection, active toolbar button, current breadcrumb segment, selected sidebar item |
-| Highlighted text | #ffffff | #ffffff | text on accent |
-| Window (header, sidebar) | #ffffff | #282828 | toolbar row and Places panel |
-| View / Base (content) | #f8f8f8 | #252525 | file list background |
-| Alternate base (zebra) | #ededed | #2e2e2e | every other row in details view |
-| Text | #1a1a1a | #e6e6e6 | primary text |
-| Inactive / secondary text | #8c8c8c | #8a8a8a | section labels, status text (columns are mixed by Dolphin patch 0006) |
-| Button background (nav pill) | #e5e5e5 | #444444 | back/forward group |
-| Card surface | – | #323232 | home page cards (Ro-KDE-Dolphin will draw them, but should read the palette) |
-| Separator | – | #333333 | status bar top border |
+Colors come from the Ro-Theme color schemes (`RoLight`, `RoDark`). The hex values measured from the early mockups (#0081ff etc.) are retired; Ro-KDE-Dolphin does not hard-code palette colors. Dolphin reads these roles:
 
-Usage bars on the home page use #228af1, #fab33f, #8e6ef7, #34bf76 on a #4b4b4b track (dark).
+| Role | Used for |
+| --- | --- |
+| Selection | selected rows and cards, active toolbar toggle |
+| View background / alternate | file list background, zebra rows in details view |
+| View inactive text (`ForegroundInactive`) | Modified, Size, Type columns (patch 0006) |
+| Button vs Window (Header group in the toolbar) | back/forward pill (patch 0007; falls back to window + 14 % text when equal) |
+| View background + 7 % text | icon / compact view cards (patches 0008, 0009) |
+
+Open points reported to Ro-Theme (2026-10-08):
+
+- RoDark `[Colors:View]` BackgroundAlternate equals BackgroundNormal (43,43,44), so zebra rows are invisible in dark mode.
+- In the toolbar (Plasma Header group) Button equals Window, so the pill uses the fallback tone; a distinct header button tone would let it use the scheme color directly.
+- Selection turns very light when the file list loses focus (inactive palette / style); `ChangeSelectionColor=false` did not change it.
+- The palette values in the team message differ from the `.colors` files on main; the files are what Dolphin uses.
 
 ## 2. Qt style (widget drawing)
 

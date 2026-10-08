@@ -1,26 +1,36 @@
-From 9cdab3da97562b87d2c80f2ea389474441e0b3e7 Mon Sep 17 00:00:00 2001
+From b362a8ae49257156aaf6e3dd4bc4e1799b1fec74 Mon Sep 17 00:00:00 2001
 From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
 Date: Thu, 1 Oct 2026 19:17:27 +0300
-Subject: [PATCH] Ro-ASD: dimmer secondary columns in details view
+Subject: [PATCH] Ro-ASD: secondary columns use the theme's inactive text color
 
 ---
- src/kitemviews/kstandarditemlistwidget.cpp | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ src/kitemviews/kstandarditemlistwidget.cpp | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/src/kitemviews/kstandarditemlistwidget.cpp b/src/kitemviews/kstandarditemlistwidget.cpp
-index 88ee1b72d..1c607ba0d 100644
+index 88ee1b72d..8daac0ea1 100644
 --- a/src/kitemviews/kstandarditemlistwidget.cpp
 +++ b/src/kitemviews/kstandarditemlistwidget.cpp
-@@ -1587,7 +1587,8 @@ void KStandardItemListWidget::updateAdditionalInfoTextColor()
-     // is not used as this might lead to unreadable text for some color schemes. Instead
-     // the text color c1 is slightly mixed with the background color.
-     const QColor c2 = styleOption().palette.base().color();
--    const int p1 = 70;
-+    // Ro-ASD: dimmer secondary columns as in the design (upstream: 70).
-+    const int p1 = 50;
-     const int p2 = 100 - p1;
-     m_additionalInfoTextColor =
-         QColor((c1.red() * p1 + c2.red() * p2) / 100, (c1.green() * p1 + c2.green() * p2) / 100, (c1.blue() * p1 + c2.blue() * p2) / 100);
+@@ -13,6 +13,7 @@
+ #include "private/kitemviewsutils.h"
+ #include "private/kpixmapmodifier.h"
+ 
++#include <KColorScheme>
+ #include <KIconEffect>
+ #include <KIconLoader>
+ #include <KIconUtils>
+@@ -1580,7 +1581,10 @@ void KStandardItemListWidget::updateAdditionalInfoTextColor()
+         m_additionalInfoTextColor = styleOption().palette.color(normalTextColorRole());
+         return;
+     } else {
+-        c1 = styleOption().palette.text().color();
++        // Ro-ASD: secondary columns use the color scheme's inactive text color, so the theme
++        // decides how dim they are and keeps them readable (upstream mixes 70 % text with base).
++        m_additionalInfoTextColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::InactiveText).color();
++        return;
+     }
+ 
+     // For the color of the additional info the inactive text color
 -- 
 2.55.0
 

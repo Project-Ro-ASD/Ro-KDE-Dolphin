@@ -1,0 +1,30 @@
+From 8cd73bbc2ac30ba5d90c825e9f25fdea695e0bc1 Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 8 Oct 2026 19:09:15 +0300
+Subject: [PATCH] Ro-ASD: three points larger file names in the views
+
+---
+ src/views/dolphinitemlistview.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/views/dolphinitemlistview.cpp b/src/views/dolphinitemlistview.cpp
+index b7da5cbab..f1598f9a2 100644
+--- a/src/views/dolphinitemlistview.cpp
++++ b/src/views/dolphinitemlistview.cpp
+@@ -173,6 +173,13 @@ void DolphinItemListView::updateFont()
+     if (settings.useSystemFont()) {
+         KItemListView::updateFont();
+         option.font = font();
++        // Ro-ASD: file names in the views are three points larger than the system font, so they stay
++        // readable next to the taller rows and cards. A custom view font in Dolphin's settings is used as is.
++        if (option.font.pointSizeF() > 0) {
++            option.font.setPointSizeF(option.font.pointSizeF() + 3.0);
++        } else if (option.font.pixelSize() > 0) {
++            option.font.setPixelSize(option.font.pixelSize() + 3);
++        }
+     } else {
+         option.font = settings.viewFont();
+     }
+-- 
+2.55.0
+

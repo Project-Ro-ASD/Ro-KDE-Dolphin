@@ -1,18 +1,18 @@
-From 814915e3faae3705d3d2a08176c72cbe83fc58da Mon Sep 17 00:00:00 2001
+From 802a71c9218d6bc014cc730b0d64790ebf1e4e68 Mon Sep 17 00:00:00 2001
 From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
-Date: Thu, 8 Oct 2026 16:51:53 +0300
+Date: Thu, 8 Oct 2026 18:42:52 +0300
 Subject: [PATCH] Ro-ASD: card style for the compact view
 
 ---
- src/kitemviews/kstandarditemlistwidget.cpp | 6 +++---
+ src/kitemviews/kstandarditemlistwidget.cpp | 4 ++--
  src/views/dolphinitemlistview.cpp          | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/kitemviews/kstandarditemlistwidget.cpp b/src/kitemviews/kstandarditemlistwidget.cpp
-index ceaca396f..f5c2e7701 100644
+index eeb6f0b26..91789bc10 100644
 --- a/src/kitemviews/kstandarditemlistwidget.cpp
 +++ b/src/kitemviews/kstandarditemlistwidget.cpp
-@@ -344,8 +344,8 @@ void KStandardItemListWidget::paint(QPainter *painter, const QStyleOptionGraphic
+@@ -345,8 +345,8 @@ void KStandardItemListWidget::paint(QPainter *painter, const QStyleOptionGraphic
  {
      const_cast<KStandardItemListWidget *>(this)->triggerCacheRefreshing();
  
@@ -23,15 +23,6 @@ index ceaca396f..f5c2e7701 100644
          // Card color = base mixed with 7 % text (design: #252525 -> #323232), so it follows any color scheme.
          const QColor base = styleOption().palette.color(QPalette::Base);
          const QColor text = styleOption().palette.color(QPalette::Text);
-@@ -354,7 +354,7 @@ void KStandardItemListWidget::paint(QPainter *painter, const QStyleOptionGraphic
-                                              base.greenF() + (text.greenF() - base.greenF()) * mix,
-                                              base.blueF() + (text.blueF() - base.blueF()) * mix);
-         const QRectF cardRect = QRectF(QPointF(0, 0), size()).adjusted(2, 2, -2, -2);
--        const qreal radius = qMin(12.0, cardRect.width() / 8.0);
-+        const qreal radius = (m_layout == CompactLayout) ? qMin(8.0, cardRect.height() / 4.0) : qMin(12.0, cardRect.width() / 8.0);
-         painter->save();
-         painter->setRenderHint(QPainter::Antialiasing);
-         painter->setPen(Qt::NoPen);
 diff --git a/src/views/dolphinitemlistview.cpp b/src/views/dolphinitemlistview.cpp
 index dd5d8c62c..b7da5cbab 100644
 --- a/src/views/dolphinitemlistview.cpp

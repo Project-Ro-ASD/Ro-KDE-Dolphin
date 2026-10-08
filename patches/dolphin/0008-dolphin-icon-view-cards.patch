@@ -1,19 +1,19 @@
-From 0451832cc1af44a45f3a7cb1ba461508578270db Mon Sep 17 00:00:00 2001
+From e18e7f7db243c2156bb15b512c34789b1f7056a1 Mon Sep 17 00:00:00 2001
 From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
 Date: Thu, 8 Oct 2026 16:25:10 +0300
 Subject: [PATCH] Ro-ASD: card style for the icon view
 
 ---
- src/kitemviews/kstandarditemlistwidget.cpp  | 19 +++++++++++++++++++
+ src/kitemviews/kstandarditemlistwidget.cpp  | 20 ++++++++++++++++++++
  src/settings/dolphin_iconsmodesettings.kcfg |  3 ++-
  src/views/dolphinitemlistview.cpp           |  3 ++-
- 3 files changed, 23 insertions(+), 2 deletions(-)
+ 3 files changed, 24 insertions(+), 2 deletions(-)
 
 diff --git a/src/kitemviews/kstandarditemlistwidget.cpp b/src/kitemviews/kstandarditemlistwidget.cpp
-index 1c607ba0d..ceaca396f 100644
+index 8daac0ea1..eeb6f0b26 100644
 --- a/src/kitemviews/kstandarditemlistwidget.cpp
 +++ b/src/kitemviews/kstandarditemlistwidget.cpp
-@@ -344,6 +344,25 @@ void KStandardItemListWidget::paint(QPainter *painter, const QStyleOptionGraphic
+@@ -345,6 +345,26 @@ void KStandardItemListWidget::paint(QPainter *painter, const QStyleOptionGraphic
  {
      const_cast<KStandardItemListWidget *>(this)->triggerCacheRefreshing();
  
@@ -27,7 +27,8 @@ index 1c607ba0d..ceaca396f 100644
 +                                             base.greenF() + (text.greenF() - base.greenF()) * mix,
 +                                             base.blueF() + (text.blueF() - base.blueF()) * mix);
 +        const QRectF cardRect = QRectF(QPointF(0, 0), size()).adjusted(2, 2, -2, -2);
-+        const qreal radius = qMin(12.0, cardRect.width() / 8.0);
++        // Ro radius scale 4/8/12/18/24: cards use 8 (clamped for very small items).
++        const qreal radius = qMin(8.0, cardRect.height() / 2.0);
 +        painter->save();
 +        painter->setRenderHint(QPainter::Antialiasing);
 +        painter->setPen(Qt::NoPen);

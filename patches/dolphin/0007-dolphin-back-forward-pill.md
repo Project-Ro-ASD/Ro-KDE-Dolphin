@@ -7,7 +7,7 @@
   - src/dolphinmainwindow.cpp (new toolbar action ro_go_back_forward)
 - Layer: UI only. Adds a QWidgetAction that shows the existing go_back/go_forward actions as two tool buttons on one rounded background. Navigation logic, shortcuts and history menus are the upstream actions; nothing else changes.
 - Reason (Ro-ASD): the design groups back and forward in one pill. KToolBar draws every action separately and has no grouping option.
-- Color: window color mixed with 14 % window text (design: #282828 -> #444444 dark, #ffffff -> #e5e5e5 light), so it is visible with any color scheme including Breeze, where Button equals Window.
+- Color: the palette Button color (Ro-Theme request 2026-10-08). Where Button equals Window the pill would be invisible; then it falls back to window mixed with 14 % window text. This happens in Breeze and also in the Plasma Header group used by Dolphin's toolbar (RoLight #E8E9EA -> pill #CCCDCE, RoDark -> #4D4D4F).
 - Used by: overrides/kxmlgui/dolphinui.rc (go_back + go_forward replaced by ro_go_back_forward). Without the override Dolphin keeps the stock buttons.
 - Translations: action text "Back and Forward" in domain ro-kde-dolphin.
 - Override considered: yes. A ui.rc cannot group buttons; a style could, but only for every application.

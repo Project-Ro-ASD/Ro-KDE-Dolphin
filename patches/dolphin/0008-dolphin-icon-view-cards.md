@@ -9,7 +9,7 @@
   - src/settings/dolphin_iconsmodesettings.kcfg (IconSize default 48, upstream 32)
 - Layer: UI drawing, layout spacing and one default. No KIO, file operation or admin logic is touched.
 - Reason (Ro-ASD): the design's folder cards (rounded tiles, icon centered, name below) are applied to the existing icon view instead of a separate home page (team decision 2026-10-08).
-- Card color: base mixed with 7 % text (design: #252525 -> #323232), so it follows any color scheme. Radius min(12 px, width / 8).
+- Card color: base mixed with 7 % text (design: #252525 -> #323232), so it follows any color scheme. Radius 8 px from the Ro radius scale 4/8/12/18/24 (Ro-Theme decision), clamped to half the card height.
 - Card aspect is kept wider than the mockup on purpose: the mockup showed six cards on a home page; a file view needs more items per screen.
 - Override considered: yes. No setting draws item backgrounds; a Qt style would affect every application.
 - Upstreamable: no, design-specific.
