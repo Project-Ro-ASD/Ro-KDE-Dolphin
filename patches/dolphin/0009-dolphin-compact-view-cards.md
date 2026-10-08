@@ -8,7 +8,7 @@
   - src/views/dolphinitemlistview.cpp (inner padding 6 px for the compact layout)
 - Layer: UI drawing and spacing only.
 - Reason (Ro-ASD): same card language as the icon view (0008), derived from the design's folder cards.
-- Radius for compact cards: min(8 px, height / 4). Cards follow each item's own width (chip look), on purpose.
+- Radius: same 8 px as 0008 (set there). Cards follow each item's own width (chip look), on purpose.
 - Depends on: 0008 (the card drawing code it extends).
 - Override considered: yes, same as 0008.
 - Upstreamable: no, design-specific.

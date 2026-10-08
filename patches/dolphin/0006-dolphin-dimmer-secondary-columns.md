@@ -5,10 +5,10 @@
 - Fedora 44 package version checked: dolphin-26.08.1-1.fc44
 - Affected upstream files:
   - src/kitemviews/kstandarditemlistwidget.cpp (updateAdditionalInfoTextColor)
-- Layer: UI color mix only.
-- Reason (Ro-ASD): secondary columns (Modified, Size, Type) are mixed from text and base color. Design values (dark: text #e6e6e6, secondary #8a8a8a on #252525; light: #1a1a1a, #8c8c8c on #f8f8f8) correspond to about 50% text, upstream uses 70%.
-- Selected rows are unchanged: they still use the highlighted text color.
-- Override considered: yes. The ratio is hard-coded; a color scheme can only change the input colors.
-- Upstreamable: no, design-specific.
-- Verification: built against v26.08.1 + 0001-0005; secondary columns visibly dimmer than the name column, selected row text unchanged.
+- Layer: UI color only.
+- Reason (Ro-ASD): secondary columns (Modified, Size, Type) use the color scheme's inactive text color, KColorScheme(Active, View).foreground(InactiveText), so Ro-Theme decides how dim they are. Requested by the Ro-Theme team (2026-10-08): the previous fixed 50 % mix gave 2.96 / 4.20 contrast with the Ro palette, below 4.5.
+- Selected rows and items with a custom text color are unchanged (upstream behavior).
+- Override considered: yes. Upstream hard-codes a 70 % text/base mix; a color scheme cannot change the ratio.
+- Upstreamable: possibly; not proposed yet.
+- Verification: built against v26.08.1 + 0001-0005; RoLight secondary columns #5B5C60 (scheme ForegroundInactive), RoDark about #A3A4A7; selected row text unchanged.
 - Upgrade risk: low.

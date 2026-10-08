@@ -1,4 +1,4 @@
-From 527727ab51385467c08c9c6d30c3a33d71785fbe Mon Sep 17 00:00:00 2001
+From e23a25eecbee0f806ffd35542bbbbc5c3a1d5968 Mon Sep 17 00:00:00 2001
 From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
 Date: Thu, 8 Oct 2026 16:52:02 +0300
 Subject: [PATCH] Ro-ASD: hide the hover selection toggle by default
