@@ -25,6 +25,7 @@ Resulting behavior: Ro-ASD built-in default, then the user's own dolphinrc / xat
 | ViewMode | dolphin_directoryviewpropertysettings.kcfg | Icons | Details | details view |
 | PreviewsShown | dolphin_directoryviewpropertysettings.kcfg | true | false | small monochrome icons |
 | VisibleRoles | dolphin_directoryviewpropertysettings.kcfg | empty (size, date) | Modified, Size, Type | design column order |
+| IconSize (IconsMode) | dolphin_iconsmodesettings.kcfg | 32 | 48 | icon view cards (patch 0008) |
 
 Already matching upstream, not patched: HighlightEntireRow=true, ExpandableFolders=true, ShowZoomSlider=false, SortRole=text, SortFoldersFirst=true.
 
