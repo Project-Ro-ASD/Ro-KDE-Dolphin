@@ -1,0 +1,26 @@
+From 527727ab51385467c08c9c6d30c3a33d71785fbe Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 8 Oct 2026 16:52:02 +0300
+Subject: [PATCH] Ro-ASD: hide the hover selection toggle by default
+
+---
+ src/settings/dolphin_generalsettings.kcfg | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/settings/dolphin_generalsettings.kcfg b/src/settings/dolphin_generalsettings.kcfg
+index 60fb40583..bb7894164 100644
+--- a/src/settings/dolphin_generalsettings.kcfg
++++ b/src/settings/dolphin_generalsettings.kcfg
+@@ -109,7 +109,8 @@
+         </entry>
+         <entry name="ShowSelectionToggle" type="Bool">
+             <label>Show selection toggle</label>
+-            <default>true</default>
++            <!-- Ro-ASD default: false, the design has no hover selection marker (upstream: true) -->
++            <default>false</default>
+         </entry>
+         <entry name="ShowPasteBarAfterCopying" type="Bool">
+             <label>Show a bar for easy pasting after a cut or copy was done using the selection mode bottom bar.</label>
+-- 
+2.55.0
+
