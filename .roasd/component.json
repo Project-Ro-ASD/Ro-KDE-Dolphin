@@ -4,7 +4,9 @@
   "component_type": "component",
   "component_class": "desktop-integration",
   "package_names": [
-    "ro-kde-dolphin"
+    "dolphin",
+    "dolphin-libs",
+    "dolphin-devel"
   ],
   "fedora_release": 44,
   "architectures": [
