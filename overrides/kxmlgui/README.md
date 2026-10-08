@@ -13,7 +13,7 @@ KXMLGUI loads one complete ui.rc document; it cannot merge a partial file. Keep 
 
 Upstream toolbar: go_back, go_forward, view_settings, url_navigators, split_view, split_stash, toggle_search, hamburger_menu
 
-Ro-ASD toolbar: go_back, go_forward, url_navigators, toggle_search, icons, details, compact, split_view, hamburger_menu
+Ro-ASD toolbar: ro_go_back_forward (patch 0007), url_navigators, toggle_search, icons, details, compact, split_view, hamburger_menu
 
 ## Version rule
 

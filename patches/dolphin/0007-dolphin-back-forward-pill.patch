@@ -1,0 +1,124 @@
+From 0b8c9ab221145b8bbffcc3612f4c305c8b76627f Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 8 Oct 2026 16:04:36 +0300
+Subject: [PATCH] Ro-ASD: group back and forward buttons in one pill
+
+---
+ src/dolphinmainwindow.cpp | 87 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
+
+diff --git a/src/dolphinmainwindow.cpp b/src/dolphinmainwindow.cpp
+index a29fe0df3..969db954f 100644
+--- a/src/dolphinmainwindow.cpp
++++ b/src/dolphinmainwindow.cpp
+@@ -91,6 +91,10 @@
+ #include <QStandardPaths>
+ #include <QTimer>
+ #include <QToolButton>
++#include <QWidgetAction>
++#include <QHBoxLayout>
++#include <QPainter>
++#include <QToolBar>
+ #include <QtConcurrentRun>
+ #include <dolphindebug.h>
+ 
+@@ -111,6 +115,84 @@ const int CurrentDolphinVersion = 202;
+ const int MaxNumberOfNavigationentries = 12;
+ // The maximum number of "Go to Tab" shortcuts
+ const int MaxActivateTabShortcuts = 9;
++
++// Ro-ASD: back and forward buttons drawn as one rounded group ("pill") as in the design.
++class RoNavigationPill : public QWidget
++{
++public:
++    using QWidget::QWidget;
++
++protected:
++    void paintEvent(QPaintEvent *) override
++    {
++        QPainter painter(this);
++        painter.setRenderHint(QPainter::Antialiasing);
++        painter.setPen(Qt::NoPen);
++        // Pill color = window mixed with 14 % window text (design: #282828 -> #444444, #ffffff -> #e5e5e5),
++        // so it stays visible with any color scheme.
++        const QColor bg = palette().window().color();
++        const QColor fg = palette().windowText().color();
++        const qreal mix = 0.14;
++        painter.setBrush(QColor::fromRgbF(bg.redF() + (fg.redF() - bg.redF()) * mix,
++                                          bg.greenF() + (fg.greenF() - bg.greenF()) * mix,
++                                          bg.blueF() + (fg.blueF() - bg.blueF()) * mix));
++        const qreal radius = qMin(height() / 4.0, 8.0);
++        painter.drawRoundedRect(QRectF(rect()), radius, radius);
++
++        // thin divider between the two buttons
++        QColor divider = palette().buttonText().color();
++        divider.setAlphaF(0.15);
++        painter.setPen(QPen(divider, 1));
++        const qreal x = width() / 2.0;
++        painter.drawLine(QPointF(x, height() * 0.3), QPointF(x, height() * 0.7));
++    }
++};
++
++class RoNavigationAction : public QWidgetAction
++{
++public:
++    RoNavigationAction(QAction *back, QMenu *backMenu, QAction *forward, QMenu *forwardMenu, QObject *parent)
++        : QWidgetAction(parent)
++        , m_back(back)
++        , m_backMenu(backMenu)
++        , m_forward(forward)
++        , m_forwardMenu(forwardMenu)
++    {
++        setText(i18nd("ro-kde-dolphin", "Back and Forward"));
++    }
++
++protected:
++    QWidget *createWidget(QWidget *parent) override
++    {
++        auto *pill = new RoNavigationPill(parent);
++        auto *layout = new QHBoxLayout(pill);
++        layout->setContentsMargins(0, 0, 0, 0);
++        layout->setSpacing(0);
++
++        auto *toolBar = qobject_cast<QToolBar *>(parent);
++        const std::pair<QAction *, QMenu *> entries[] = {{m_back, m_backMenu}, {m_forward, m_forwardMenu}};
++        for (const auto &[action, menu] : entries) {
++            auto *button = new QToolButton(pill);
++            button->setDefaultAction(action);
++            button->setMenu(menu);
++            button->setPopupMode(QToolButton::DelayedPopup);
++            button->setAutoRaise(true);
++            button->setToolButtonStyle(Qt::ToolButtonIconOnly);
++            if (toolBar) {
++                button->setIconSize(toolBar->iconSize());
++                QObject::connect(toolBar, &QToolBar::iconSizeChanged, button, &QToolButton::setIconSize);
++            }
++            layout->addWidget(button);
++        }
++        return pill;
++    }
++
++private:
++    QAction *m_back;
++    QMenu *m_backMenu;
++    QAction *m_forward;
++    QMenu *m_forwardMenu;
++};
+ }
+ 
+ DolphinMainWindow::DolphinMainWindow()
+@@ -2157,6 +2239,11 @@ void DolphinMainWindow::setupActions()
+     connect(middleClickEventFilter, &MiddleClickActionEventFilter::actionMiddleClicked, this, &DolphinMainWindow::slotBackForwardActionMiddleClicked);
+     m_backAction->popupMenu()->installEventFilter(middleClickEventFilter);
+     m_forwardAction->popupMenu()->installEventFilter(middleClickEventFilter);
++
++    // Ro-ASD: grouped back/forward buttons for the toolbar (used by the Ro-ASD dolphinui.rc).
++    auto *roNavigationAction =
++        new RoNavigationAction(m_backAction, m_backAction->popupMenu(), m_forwardAction, m_forwardAction->popupMenu(), actionCollection());
++    actionCollection()->addAction(QStringLiteral("ro_go_back_forward"), roNavigationAction);
+     KStandardAction::up(this, &DolphinMainWindow::goUp, actionCollection());
+     QAction *homeAction = KStandardAction::home(this, &DolphinMainWindow::goHome, actionCollection());
+     homeAction->setWhatsThis(xi18nc("@info:whatsthis",
+-- 
+2.55.0
+
