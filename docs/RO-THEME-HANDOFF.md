@@ -2,6 +2,15 @@
 
 Status: open. Items below are part of the Ro-ASD Dolphin design but are drawn by the Qt style, color scheme, icon theme, fonts or KWin, not by Dolphin. They belong to Ro-Theme (see AGENTS.md ownership rules). Last checked against RoLight / RoDark on 2026-10-08.
 
+## Ro-Theme decisions (2026-10-09)
+
+- Qt widget style stays **Breeze**. Some differences (tree lines) will be reduced with Breeze settings; the translucent selection and header separators stay. Section 2 is therefore not planned.
+- Accent colors are intentional: the palette is derived from the logo. The mockup accent #0081ff gives 3.76:1 contrast with white text (below 4.5:1); Dolphin uses the scheme accent (#3059A6 light / #7DA2E8 dark). Mockups should be redrawn with Ro colors.
+- Icons: the Ro Icons set drawn for Dolphin goes into Ro-Theme `platform/icons/ro-icons` (PR from branch `feat/icons-dolphin`), shipping in Ro-Theme 1.1.0. Ro-Theme adds `[Icons] Theme=ro-icons` to the system and global theme defaults after merge.
+- Window decoration: Ro's own Aurorae decoration becomes the default in the window decoration wave; the titlebar uses the window background color. Button shape is decided there.
+- Fonts: UI Noto Sans 10 pt, monospace Noto Sans Mono 10 pt, window title Inter semi-bold 10 pt; written to system defaults in a later stage. Cursor stays Breeze; the empty ro-cursor is dropped.
+- Theme problems seen in Dolphin are reported as issues in Ro-Theme (screenshot, theme version, app version).
+
 ## 1. Color scheme
 
 Colors come from the Ro-Theme color schemes (`RoLight`, `RoDark`). The hex values measured from the early mockups (#0081ff etc.) are retired; Ro-KDE-Dolphin does not hard-code palette colors. Dolphin reads these roles:
@@ -26,6 +35,8 @@ Open points reported to Ro-Theme (2026-10-08):
 
 ## 2. Qt style (widget drawing)
 
+Not planned: Ro-Theme keeps Breeze (see decisions). Kept for reference.
+
 - Selection: solid accent fill with highlighted text, small corner radius, no outline or translucent overlay (Breeze draws a translucent frame today).
 - Active toggle tool buttons (current view mode): solid accent fill, white icon, rounded rect.
 - Places panel: selected item as filled accent rounded rect with bold text; no hover frame.
@@ -36,7 +47,8 @@ Open points reported to Ro-Theme (2026-10-08):
 ## 3. Icons
 
 - Monochrome outline icon set for toolbar, Places panel and file types (folder filled, files outline), as in the mockups.
-- App icon: blue rounded square with white folder (may belong to ro-asd-branding).
+- App icon: rounded square in the Ro accent with a white folder.
+- Delivered as Ro Icons (Ro-Theme PR `feat/icons-dolphin`, release 1.1.0); icon names Dolphin uses are listed below.
 
 Dolphin ships no icons; it asks the system icon theme for these names (taken from Dolphin 26.08 source). A Ro-Theme icon theme with `Inherits=breeze` in `index.theme` can start with this list and fall back to Breeze for the rest. Monochrome icons should use the `ColorScheme-Text` stylesheet (`currentColor`) as Breeze does, so one set works in RoLight and RoDark.
 
@@ -58,13 +70,14 @@ Making the icon theme the default (`kdeglobals` `[Icons] Theme=`) belongs to Ro-
 
 - Single header row: titlebar visually merged with the toolbar (same color, no separator line). KWin cannot place window buttons inside the Dolphin toolbar; Ro-Theme decoration should make the titlebar and toolbar read as one row.
 - Large rounded window corners and a soft shadow.
+- Planned: Ro Aurorae decoration as default (see decisions).
 - Minimize / maximize / close as thin glyphs without button backgrounds.
 
 ## 5. Fonts and locale (not Dolphin)
 
-- Font: a clean sans similar to the mockups. Dolphin draws file names 3 pt larger than the system font (patch 0011); Ro-Theme only needs to set the system font.
+- Font: decided as Noto Sans 10 pt (see decisions). Dolphin draws file names 3 pt larger than the system font (patch 0011).
 - Dates show `1.10.2026`; the design shows `01.10.2026`. Comes from the system locale format (ro-asd-defaults).
-- Some MIME type names are untranslated in Turkish ("Folder", "Plain text document"); they come from shared-mime-info, not Dolphin.
+- Some MIME type names are untranslated in Turkish ("Folder", "Plain text document"); they come from shared-mime-info (upstream), not Dolphin; nobody tracks this yet.
 
 ## Already handled in Ro-KDE-Dolphin
 
