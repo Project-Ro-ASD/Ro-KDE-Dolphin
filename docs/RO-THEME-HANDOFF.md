@@ -38,6 +38,22 @@ Open points reported to Ro-Theme (2026-10-08):
 - Monochrome outline icon set for toolbar, Places panel and file types (folder filled, files outline), as in the mockups.
 - App icon: blue rounded square with white folder (may belong to ro-asd-branding).
 
+Dolphin ships no icons; it asks the system icon theme for these names (taken from Dolphin 26.08 source). A Ro-Theme icon theme with `Inherits=breeze` in `index.theme` can start with this list and fall back to Breeze for the rest. Monochrome icons should use the `ColorScheme-Text` stylesheet (`currentColor`) as Breeze does, so one set works in RoLight and RoDark.
+
+| Where | Size | Icon names |
+| --- | --- | --- |
+| Toolbar: back / forward pill | 22 | `go-previous`, `go-next` |
+| Toolbar: search | 22 | `edit-find` |
+| Toolbar: view modes | 22 | `view-list-icons` (icons), `view-list-tree` (details), `view-list-details` (compact) |
+| Toolbar: split | 22 | `view-split-left-right`, `view-right-close` |
+| Toolbar: menu | 22 | `application-menu` |
+| Places panel (drawn by KIO, check names there) | 16 | `user-home`, `user-desktop`, `folder-documents`, `folder-download`, `folder-music`, `folder-pictures`, `folder-videos`, `user-trash`, `user-trash-full`, `network-workgroup`, `document-open-recent`, `folder-open-recent`, `drive-harddisk`, `drive-removable-media`, `media-optical` |
+| File list: folders | 16-22 (details), 48 (icons) | `folder`, `folder-publicshare`, `folder-templates` and the special folders above |
+| File list: file types (from shared-mime-info) | 16-22, 48 | `text-plain`, `image-x-generic`, `audio-x-generic`, `video-x-generic`, `application-pdf`, `package-x-generic`, `application-x-rpm`, other MIME icons |
+| App icon | all | `org.kde.dolphin` |
+
+Making the icon theme the default (`kdeglobals` `[Icons] Theme=`) belongs to Ro-Theme / ro-asd-defaults, not to Ro-KDE-Dolphin.
+
 ## 4. Window
 
 - Single header row: titlebar visually merged with the toolbar (same color, no separator line). KWin cannot place window buttons inside the Dolphin toolbar; Ro-Theme decoration should make the titlebar and toolbar read as one row.
