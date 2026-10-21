@@ -23,3 +23,43 @@ msgstr[1] "%2, %1 seçili"
 #. Toolbar: grouped back/forward buttons (patch 0007)
 msgid "Back and Forward"
 msgstr "Geri ve İleri"
+
+#. Context menu: submenu with open-with, plugins and version control (patch 0012)
+msgid "More Options"
+msgstr "Diğer Seçenekler"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "New Folder"
+msgstr "Yeni klasör"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Paste"
+msgstr "Yapıştır"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Terminal"
+msgstr "Terminal"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Hidden Files"
+msgstr "Gizliler"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Cut"
+msgstr "Kes"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Copy"
+msgstr "Kopyala"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Rename"
+msgstr "Yeniden adlandır"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Move to Trash"
+msgstr "Çöpe taşı"
+
+#. Context menu quick button, keep short (patch 0012)
+msgid "Delete"
+msgstr "Sil"
