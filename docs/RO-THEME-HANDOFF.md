@@ -80,4 +80,4 @@ Making the icon theme the default (`kdeglobals` `[Icons] Theme=`) belongs to Ro-
 
 ## Already handled in Ro-KDE-Dolphin
 
-Toolbar layout and back/forward pill, defaults, folder size "—", status bar layout and text, row height and tree indent, secondary column gray, larger icons and spacing in the icon and compact views (no item cards since 0.1.1), no "+" selection marker on hover, larger file names (patches 0001–0011, overrides/kxmlgui).
+Toolbar layout and back/forward pill, defaults, folder size "—", status bar layout and text, row height and tree indent, secondary column gray, larger icons and spacing in the icon and compact views (no item cards since 0.1.1), no "+" selection marker on hover, larger file names, context menus with a quick action row and More Options (patches 0001–0012, overrides/kxmlgui).

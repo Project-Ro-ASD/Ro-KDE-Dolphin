@@ -1,0 +1,460 @@
+From 8fdb145c0d49765e62db5bbf6a0ef3dc2c5c834c Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Wed, 21 Oct 2026 15:58:08 +0300
+Subject: [PATCH] Ro-ASD: context menus with a quick action row and More
+ Options
+
+---
+ src/dolphincontextmenu.cpp | 293 +++++++++++++++++++++++++++++--------
+ src/dolphincontextmenu.h   |  10 +-
+ 2 files changed, 244 insertions(+), 59 deletions(-)
+
+diff --git a/src/dolphincontextmenu.cpp b/src/dolphincontextmenu.cpp
+index b9b6edd..e0ee418 100644
+--- a/src/dolphincontextmenu.cpp
++++ b/src/dolphincontextmenu.cpp
+@@ -32,8 +32,130 @@
+ 
+ #include <QApplication>
+ #include <QClipboard>
++#include <QHBoxLayout>
+ #include <QKeyEvent>
+ #include <QAction>
++#include <QPainter>
++#include <QToolButton>
++#include <QWidgetAction>
++
++#include <algorithm>
++#include <functional>
++
++namespace
++{
++// Ro-ASD: large buttons in a row at the top of the context menu (design "B"). Each button
++// mirrors an existing Dolphin action (icon, enabled and checked state, shortcut in the
++// tooltip) and triggers it; nothing new is added to what the actions do.
++class RoQuickButton : public QToolButton
++{
++public:
++    using QToolButton::QToolButton;
++
++protected:
++    void paintEvent(QPaintEvent *event) override
++    {
++        {
++            // Tile = window color mixed with 7 % text, so it follows any color scheme.
++            QPainter painter(this);
++            painter.setRenderHint(QPainter::Antialiasing);
++            painter.setPen(Qt::NoPen);
++            const QColor bg = palette().window().color();
++            const QColor fg = palette().windowText().color();
++            const qreal mix = 0.07;
++            painter.setBrush(QColor::fromRgbF(bg.redF() + (fg.redF() - bg.redF()) * mix,
++                                              bg.greenF() + (fg.greenF() - bg.greenF()) * mix,
++                                              bg.blueF() + (fg.blueF() - bg.blueF()) * mix));
++            painter.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 6, 6);
++        }
++        QToolButton::paintEvent(event);
++    }
++};
++
++struct RoQuickEntry {
++    QAction *action;
++    std::function<QString()> label;
++};
++
++void roAddQuickRow(QMenu *menu, const QList<RoQuickEntry> &entries)
++{
++    auto *row = new QWidget(menu);
++    auto *layout = new QHBoxLayout(row);
++    layout->setContentsMargins(4, 2, 4, 4);
++    layout->setSpacing(4);
++    int count = 0;
++    for (const RoQuickEntry &entry : entries) {
++        QAction *action = entry.action;
++        if (!action) {
++            continue;
++        }
++        auto *button = new RoQuickButton(row);
++        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
++        button->setAutoRaise(true);
++        button->setIconSize(QSize(22, 22));
++        button->setMinimumSize(72, 58);
++        button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
++        button->setFocusPolicy(Qt::NoFocus);
++        const auto label = entry.label;
++        const auto sync = [button, action, label]() {
++            button->setIcon(action->icon());
++            button->setText(label());
++            button->setEnabled(action->isEnabled());
++            button->setCheckable(action->isCheckable());
++            button->setChecked(action->isChecked());
++            QString tip = KLocalizedString::removeAcceleratorMarker(action->text());
++            if (!action->shortcut().isEmpty()) {
++                tip += QStringLiteral(" (%1)").arg(action->shortcut().toString(QKeySequence::NativeText));
++            }
++            button->setToolTip(tip);
++        };
++        sync();
++        QObject::connect(action, &QAction::changed, button, sync);
++        QObject::connect(button, &QToolButton::clicked, menu, [menu, action]() {
++            menu->close();
++            action->trigger();
++        });
++        layout->addWidget(button);
++        ++count;
++    }
++    if (count == 0) {
++        delete row;
++        return;
++    }
++    auto *rowAction = new QWidgetAction(menu);
++    rowAction->setDefaultWidget(row);
++    menu->addAction(rowAction);
++    menu->addSeparator();
++}
++
++QString roLabel(const char *text)
++{
++    return i18nd("ro-kde-dolphin", text);
++}
++
++// Ro-ASD: "More Options" submenu for open-with, plugins (actions, activities, tags, compress,
++// open as administrator) and version control. Only added when something landed in it.
++void roAddMoreMenu(QMenu *menu, QMenu *more)
++{
++    const QList<QAction *> actions = more->actions();
++    const bool hasEntries = std::any_of(actions.cbegin(), actions.cend(), [](const QAction *action) {
++        return !action->isSeparator() && action->isVisible();
++    });
++    menu->addSeparator();
++    if (hasEntries) {
++        menu->addMenu(more);
++    } else {
++        delete more;
++    }
++}
++
++QMenu *roCreateMoreMenu(QMenu *parent)
++{
++    auto *more = new QMenu(i18nd("ro-kde-dolphin", "More Options"), parent);
++    more->setIcon(QIcon::fromTheme(QStringLiteral("view-more-symbolic")));
++    return more;
++}
++}
+ 
+ DolphinContextMenu::DolphinContextMenu(DolphinMainWindow *parent,
+                                        const KFileItem &fileInfo,
+@@ -216,6 +338,9 @@ void DolphinContextMenu::addDirectoryItemContextMenu()
+     // Insert 'Open With' entries
+     addOpenWithActions();
+ 
++    // Ro-ASD: "Create New" starts the second group (with copy location, paste, duplicate ...)
++    addSeparator();
++
+     // set up 'Create New' menu
+     QAction *newDirAction = m_mainWindow->actionCollection()->action(QStringLiteral("create_subdir"));
+     QAction *newFileAction = m_mainWindow->actionCollection()->action(QStringLiteral("create_file"));
+@@ -236,8 +361,6 @@ void DolphinContextMenu::addDirectoryItemContextMenu()
+     menu->setTitle(i18nc("@title:menu Create new folder, file, link, etc.", "Create New"));
+     menu->setIcon(QIcon::fromTheme(QStringLiteral("list-add")));
+     addMenu(menu);
+-
+-    addSeparator();
+ }
+ 
+ void DolphinContextMenu::addOpenParentFolderActions()
+@@ -272,6 +395,28 @@ void DolphinContextMenu::addItemContextMenu()
+     // be situations where there are no selected items.
+     m_fileItemActions->setItemListProperties(selectedItemsProps);
+ 
++    // Ro-ASD: cut, copy, rename and move to trash (or delete) as large buttons on top.
++    {
++        const KActionCollection *collection = m_mainWindow->actionCollection();
++        QAction *removeAction = roRemoveAction(selectedItemsProps);
++        roAddQuickRow(this,
++                      {{collection->action(KStandardAction::name(KStandardAction::Cut)),
++                        [] {
++                            return roLabel("Cut");
++                        }},
++                       {collection->action(KStandardAction::name(KStandardAction::Copy)),
++                        [] {
++                            return roLabel("Copy");
++                        }},
++                       {collection->action(KStandardAction::name(KStandardAction::RenameFile)),
++                        [] {
++                            return roLabel("Rename");
++                        }},
++                       {removeAction, [removeAction] {
++                            return removeAction->icon().name() == QLatin1String("edit-delete") ? roLabel("Delete") : roLabel("Move to Trash");
++                        }}});
++    }
++
+     if (m_selectedItems.count() == 1) {
+         // single files
+         if (m_fileInfo.isDir()) {
+@@ -311,8 +456,6 @@ void DolphinContextMenu::addItemContextMenu()
+ 
+     insertDefaultItemActions(selectedItemsProps);
+ 
+-    addAdditionalActions(selectedItemsProps);
+-
+     // insert 'Copy To' and 'Move To' sub menus
+     if (ContextMenuSettings::showCopyMoveMenu()) {
+         m_copyToMenu.setUrls(m_selectedItems.urlList());
+@@ -331,8 +474,12 @@ void DolphinContextMenu::addItemContextMenu()
+         }
+     }
+ 
+-    // insert 'Properties...' entry
+-    addSeparator();
++    // Ro-ASD: plugins and version control in "More Options"
++    QMenu *more = roCreateMoreMenu(this);
++    addAdditionalActions(selectedItemsProps, more, true);
++    roAddMoreMenu(this, more);
++
++    // insert 'Properties...' entry (Ro-ASD: right after "More Options", same group)
+     QAction *propertiesAction = m_mainWindow->actionCollection()->action(QStringLiteral("properties"));
+     addAction(propertiesAction);
+ }
+@@ -341,6 +488,39 @@ void DolphinContextMenu::addViewportContextMenu()
+ {
+     const KFileItemListProperties baseUrlProperties(KFileItemList() << baseFileItem());
+     m_fileItemActions->setItemListProperties(baseUrlProperties);
++    const KActionCollection *collection = m_mainWindow->actionCollection();
++
++    // Ro-ASD: new folder, paste, terminal and hidden files as large buttons on top.
++    {
++        QAction *pasteAction = createPasteAction();
++        if (!pasteAction) {
++            // Nothing to paste: show the button disabled.
++            pasteAction = new QAction(QIcon::fromTheme(QStringLiteral("edit-paste")),
++                                      collection->action(KStandardAction::name(KStandardAction::Paste))->text(),
++                                      this);
++            pasteAction->setEnabled(false);
++        }
++        QAction *terminalAction = nullptr;
++        if (baseUrlProperties.isLocal() && baseUrlProperties.isDirectory() && ContextMenuSettings::showOpenTerminal()) {
++            terminalAction = collection->action(QStringLiteral("open_terminal_here"));
++        }
++        roAddQuickRow(this,
++                      {{collection->action(QStringLiteral("create_dir")),
++                        [] {
++                            return roLabel("New Folder");
++                        }},
++                       {pasteAction,
++                        [] {
++                            return roLabel("Paste");
++                        }},
++                       {terminalAction,
++                        [] {
++                            return roLabel("Terminal");
++                        }},
++                       {collection->action(QStringLiteral("show_hidden_files")), [] {
++                            return roLabel("Hidden Files");
++                        }}});
++    }
+ 
+     // Set up and insert 'Create New' menu
+     KNewFileMenu *newFileMenu = m_mainWindow->newFileMenu();
+@@ -348,37 +528,27 @@ void DolphinContextMenu::addViewportContextMenu()
+     newFileMenu->setWorkingDirectory(m_baseUrl);
+     addMenu(newFileMenu->menu());
+ 
+-    // Show "open with" menu items even if the dir is empty, because there are legitimate
+-    // use cases for this, such as opening an empty dir in Kate or VSCode or something
+-    addOpenWithActions();
+-
+-    QAction *pasteAction = createPasteAction();
+-    if (pasteAction) {
+-        addAction(pasteAction);
++    // Insert 'View Mode' and 'Sort By'
++    if (ContextMenuSettings::showViewMode()) {
++        addAction(collection->action(QStringLiteral("view_mode")));
++    }
++    if (ContextMenuSettings::showSortBy()) {
++        addAction(collection->action(QStringLiteral("sort")));
+     }
+ 
++    // Ro-ASD: open with, 'Add to Places', plugins and version control in "More Options"
++    QMenu *more = roCreateMoreMenu(this);
++    // Show "open with" menu items even if the dir is empty, because there are legitimate
++    // use cases for this, such as opening an empty dir in Kate or VSCode or something
++    addOpenWithActions(more);
+     // Insert 'Add to Places' entry if it's not already in the places panel
+     if (ContextMenuSettings::showAddToPlaces() && !placeExists(m_mainWindow->activeViewContainer()->url())) {
+-        addAction(m_mainWindow->actionCollection()->action(QStringLiteral("add_to_places")));
++        more->addAction(collection->action(QStringLiteral("add_to_places")));
+     }
+-    addSeparator();
++    addAdditionalActions(baseUrlProperties, more, false);
++    roAddMoreMenu(this, more);
+ 
+-    // Insert 'Sort By' and 'View Mode'
+-    if (ContextMenuSettings::showSortBy()) {
+-        addAction(m_mainWindow->actionCollection()->action(QStringLiteral("sort")));
+-    }
+-    if (ContextMenuSettings::showViewMode()) {
+-        addAction(m_mainWindow->actionCollection()->action(QStringLiteral("view_mode")));
+-    }
+-    if (ContextMenuSettings::showSortBy() || ContextMenuSettings::showViewMode()) {
+-        addSeparator();
+-    }
+-
+-    addAdditionalActions(baseUrlProperties);
+-
+-    addSeparator();
+-
+-    QAction *propertiesAction = m_mainWindow->actionCollection()->action(QStringLiteral("properties"));
++    QAction *propertiesAction = collection->action(QStringLiteral("properties"));
+     addAction(propertiesAction);
+ }
+ 
+@@ -386,9 +556,10 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
+ {
+     const KActionCollection *collection = m_mainWindow->actionCollection();
+ 
+-    // Insert 'Cut', 'Copy', 'Copy Location' and 'Paste'
+-    addAction(collection->action(KStandardAction::name(KStandardAction::Cut)));
+-    addAction(collection->action(KStandardAction::name(KStandardAction::Copy)));
++    // Ro-ASD: 'Cut', 'Copy', 'Rename' and 'Move to Trash' are in the quick row (addItemContextMenu).
++    addSeparator();
++
++    // Insert 'Copy Location' and 'Paste'
+     if (ContextMenuSettings::showCopyLocation()) {
+         QAction *copyPathAction = collection->action(QStringLiteral("copy_location"));
+         copyPathAction->setEnabled(m_selectedItems.size() == 1);
+@@ -404,34 +575,39 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
+         addAction(m_mainWindow->actionCollection()->action(QStringLiteral("duplicate")));
+     }
+ 
+-    // Insert 'Rename'
+-    addAction(collection->action(KStandardAction::name(KStandardAction::RenameFile)));
+-
+     // Insert 'Add to Places' entry if appropriate
+     if (ContextMenuSettings::showAddToPlaces() && m_selectedItems.count() == 1 && m_fileInfo.isDir() && !placeExists(m_fileInfo.url())) {
+         addAction(m_mainWindow->actionCollection()->action(QStringLiteral("add_to_places")));
+     }
+ 
+-    addSeparator();
++    // Ro-ASD: when both 'Move to Trash' and 'Delete' are shown, 'Move to Trash' is the quick
++    // button and 'Delete' stays in the list.
++    const bool showDeleteAction = (KSharedConfig::openConfig()->group(QStringLiteral("KDE")).readEntry("ShowDeleteCommand", false) || !properties.isLocal());
++    const bool showMoveToTrashAction = (properties.isLocal() && properties.supportsMoving());
++    if (showDeleteAction && showMoveToTrashAction) {
++        addSeparator();
++        addAction(m_mainWindow->actionCollection()->action(KStandardAction::name(KStandardAction::DeleteFile)));
++    }
++}
+ 
+-    // Insert 'Move to Trash' and/or 'Delete'
++QAction *DolphinContextMenu::roRemoveAction(const KFileItemListProperties &properties)
++{
++    // Same choice upstream makes between 'Move to Trash', 'Delete' and the Shift-aware remove action.
+     const bool showDeleteAction = (KSharedConfig::openConfig()->group(QStringLiteral("KDE")).readEntry("ShowDeleteCommand", false) || !properties.isLocal());
+     const bool showMoveToTrashAction = (properties.isLocal() && properties.supportsMoving());
+ 
+     if (showDeleteAction && showMoveToTrashAction) {
+         delete m_removeAction;
+         m_removeAction = nullptr;
+-        addAction(m_mainWindow->actionCollection()->action(KStandardAction::name(KStandardAction::MoveToTrash)));
+-        addAction(m_mainWindow->actionCollection()->action(KStandardAction::name(KStandardAction::DeleteFile)));
++        return m_mainWindow->actionCollection()->action(KStandardAction::name(KStandardAction::MoveToTrash));
+     } else if (showDeleteAction && !showMoveToTrashAction) {
+-        addAction(m_mainWindow->actionCollection()->action(KStandardAction::name(KStandardAction::DeleteFile)));
+-    } else {
+-        if (!m_removeAction) {
+-            m_removeAction = new DolphinRemoveAction(this, m_mainWindow->actionCollection());
+-        }
+-        addAction(m_removeAction);
+-        m_removeAction->update();
++        return m_mainWindow->actionCollection()->action(KStandardAction::name(KStandardAction::DeleteFile));
++    }
++    if (!m_removeAction) {
++        m_removeAction = new DolphinRemoveAction(this, m_mainWindow->actionCollection());
+     }
++    m_removeAction->update();
++    return m_removeAction;
+ }
+ 
+ bool DolphinContextMenu::placeExists(const QUrl &url) const
+@@ -492,10 +668,10 @@ KFileItem DolphinContextMenu::baseFileItem()
+     return *m_baseFileItem;
+ }
+ 
+-void DolphinContextMenu::addOpenWithActions()
++void DolphinContextMenu::addOpenWithActions(QMenu *target)
+ {
+     // insert 'Open With...' action or sub menu
+-    m_fileItemActions->insertOpenWithActionsTo(nullptr, this, QStringList{qApp->desktopFileName()});
++    m_fileItemActions->insertOpenWithActionsTo(nullptr, target ? target : this, QStringList{qApp->desktopFileName()});
+ 
+     // For a single file, hint in "Open with" menu that middle-clicking would open it in the secondary app,
+     // and shift + middle-clicking would open it in the third associated app.
+@@ -528,22 +704,25 @@ void DolphinContextMenu::addOpenWithActions()
+     }
+ }
+ 
+-void DolphinContextMenu::addAdditionalActions(const KFileItemListProperties &props)
++void DolphinContextMenu::addAdditionalActions(const KFileItemListProperties &props, QMenu *target, bool withTerminal)
+ {
+-    addSeparator();
++    // Ro-ASD: added to the given menu ("More Options"); the terminal action is left out where the
++    // quick row already has it.
++    QMenu *menu = target ? target : this;
++    menu->addSeparator();
+ 
+     QList<QAction *> additionalActions;
+-    if (props.isLocal() && props.isDirectory() && ContextMenuSettings::showOpenTerminal()) {
++    if (withTerminal && props.isLocal() && props.isDirectory() && ContextMenuSettings::showOpenTerminal()) {
+         additionalActions << m_mainWindow->actionCollection()->action(QStringLiteral("open_terminal_here"));
+     }
+-    m_fileItemActions->addActionsTo(this, KFileItemActions::MenuActionSource::All, additionalActions);
++    m_fileItemActions->addActionsTo(menu, KFileItemActions::MenuActionSource::All, additionalActions);
+ 
+     const DolphinView *view = m_mainWindow->activeViewContainer()->view();
+     const QList<QAction *> versionControlActions = view->versionControlActions(m_selectedItems);
+     if (!versionControlActions.isEmpty()) {
+-        addSeparator();
+-        addActions(versionControlActions);
+-        addSeparator();
++        menu->addSeparator();
++        menu->addActions(versionControlActions);
++        menu->addSeparator();
+     }
+ }
+ 
+diff --git a/src/dolphincontextmenu.h b/src/dolphincontextmenu.h
+index b357fdd..25f6ec9 100644
+--- a/src/dolphincontextmenu.h
++++ b/src/dolphincontextmenu.h
+@@ -73,6 +73,12 @@ private:
+ 
+     void insertDefaultItemActions(const KFileItemListProperties &);
+ 
++    /**
++     * Ro-ASD: the action for the quick row's remove button ('Move to Trash', 'Delete' or the
++     * Shift-aware remove action), chosen as upstream does.
++     */
++    QAction *roRemoveAction(const KFileItemListProperties &properties);
++
+     bool placeExists(const QUrl &url) const;
+ 
+     QAction *createPasteAction();
+@@ -87,12 +93,12 @@ private:
+     /**
+      * Adds "Open With" actions
+      */
+-    void addOpenWithActions();
++    void addOpenWithActions(QMenu *target = nullptr);
+ 
+     /**
+      * Add services, custom actions, plugins and version control items to the menu
+      */
+-    void addAdditionalActions(const KFileItemListProperties &props);
++    void addAdditionalActions(const KFileItemListProperties &props, QMenu *target = nullptr, bool withTerminal = true);
+ 
+ private:
+     void addDirectoryItemContextMenu();
+-- 
+2.43.0
+
