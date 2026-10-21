@@ -1,16 +1,16 @@
-From 8fdb145c0d49765e62db5bbf6a0ef3dc2c5c834c Mon Sep 17 00:00:00 2001
+From 106f9120bf40edb0f7fd2c17339a2fda5d8955e9 Mon Sep 17 00:00:00 2001
 From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
 Date: Wed, 21 Oct 2026 15:58:08 +0300
 Subject: [PATCH] Ro-ASD: context menus with a quick action row and More
  Options
 
 ---
- src/dolphincontextmenu.cpp | 293 +++++++++++++++++++++++++++++--------
+ src/dolphincontextmenu.cpp | 295 ++++++++++++++++++++++++++++++-------
  src/dolphincontextmenu.h   |  10 +-
- 2 files changed, 244 insertions(+), 59 deletions(-)
+ 2 files changed, 246 insertions(+), 59 deletions(-)
 
 diff --git a/src/dolphincontextmenu.cpp b/src/dolphincontextmenu.cpp
-index b9b6edd..e0ee418 100644
+index b9b6edd..6513c32 100644
 --- a/src/dolphincontextmenu.cpp
 +++ b/src/dolphincontextmenu.cpp
 @@ -32,8 +32,130 @@
@@ -256,7 +256,7 @@ index b9b6edd..e0ee418 100644
  
      // Set up and insert 'Create New' menu
      KNewFileMenu *newFileMenu = m_mainWindow->newFileMenu();
-@@ -348,37 +528,27 @@ void DolphinContextMenu::addViewportContextMenu()
+@@ -348,37 +528,29 @@ void DolphinContextMenu::addViewportContextMenu()
      newFileMenu->setWorkingDirectory(m_baseUrl);
      addMenu(newFileMenu->menu());
  
@@ -286,7 +286,9 @@ index b9b6edd..e0ee418 100644
 +        more->addAction(collection->action(QStringLiteral("add_to_places")));
      }
 -    addSeparator();
-+    addAdditionalActions(baseUrlProperties, more, false);
++    // Terminal is passed again (as upstream does) so KFileItemActions keeps grouping the service
++    // menus under "Actions" instead of spreading them over More Options.
++    addAdditionalActions(baseUrlProperties, more, true);
 +    roAddMoreMenu(this, more);
  
 -    // Insert 'Sort By' and 'View Mode'
@@ -309,7 +311,7 @@ index b9b6edd..e0ee418 100644
      addAction(propertiesAction);
  }
  
-@@ -386,9 +556,10 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
+@@ -386,9 +558,10 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
  {
      const KActionCollection *collection = m_mainWindow->actionCollection();
  
@@ -323,7 +325,7 @@ index b9b6edd..e0ee418 100644
      if (ContextMenuSettings::showCopyLocation()) {
          QAction *copyPathAction = collection->action(QStringLiteral("copy_location"));
          copyPathAction->setEnabled(m_selectedItems.size() == 1);
-@@ -404,34 +575,39 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
+@@ -404,34 +577,39 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
          addAction(m_mainWindow->actionCollection()->action(QStringLiteral("duplicate")));
      }
  
@@ -377,7 +379,7 @@ index b9b6edd..e0ee418 100644
  }
  
  bool DolphinContextMenu::placeExists(const QUrl &url) const
-@@ -492,10 +668,10 @@ KFileItem DolphinContextMenu::baseFileItem()
+@@ -492,10 +670,10 @@ KFileItem DolphinContextMenu::baseFileItem()
      return *m_baseFileItem;
  }
  
@@ -390,7 +392,7 @@ index b9b6edd..e0ee418 100644
  
      // For a single file, hint in "Open with" menu that middle-clicking would open it in the secondary app,
      // and shift + middle-clicking would open it in the third associated app.
-@@ -528,22 +704,25 @@ void DolphinContextMenu::addOpenWithActions()
+@@ -528,22 +706,25 @@ void DolphinContextMenu::addOpenWithActions()
      }
  }
  
@@ -398,8 +400,8 @@ index b9b6edd..e0ee418 100644
 +void DolphinContextMenu::addAdditionalActions(const KFileItemListProperties &props, QMenu *target, bool withTerminal)
  {
 -    addSeparator();
-+    // Ro-ASD: added to the given menu ("More Options"); the terminal action is left out where the
-+    // quick row already has it.
++    // Ro-ASD: added to the given menu ("More Options"); withTerminal = false leaves the terminal
++    // action out.
 +    QMenu *menu = target ? target : this;
 +    menu->addSeparator();
  
