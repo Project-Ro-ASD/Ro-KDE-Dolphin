@@ -17,11 +17,10 @@ Colors come from the Ro-Theme color schemes (`RoLight`, `RoDark`). The hex value
 
 | Role | Used for |
 | --- | --- |
-| Selection | selected rows and cards, active toolbar toggle |
+| Selection | selected rows and items, active toolbar toggle |
 | View background / alternate | file list background, zebra rows in details view |
 | View inactive text (`ForegroundInactive`) | Modified, Size, Type columns (patch 0006) |
 | Button vs Window (Header group in the toolbar) | back/forward pill (patch 0007; falls back to window + 14 % text when equal) |
-| View background + 7 % text | icon / compact view cards (patches 0008, 0009) |
 
 Resolved:
 
@@ -81,4 +80,4 @@ Making the icon theme the default (`kdeglobals` `[Icons] Theme=`) belongs to Ro-
 
 ## Already handled in Ro-KDE-Dolphin
 
-Toolbar layout and back/forward pill, defaults, folder size "—", status bar layout and text, row height and tree indent, secondary column gray, icon and compact view cards, no "+" selection marker on hover, larger file names (patches 0001–0011, overrides/kxmlgui).
+Toolbar layout and back/forward pill, defaults, folder size "—", status bar layout and text, row height and tree indent, secondary column gray, larger icons and spacing in the icon and compact views (no item cards since 0.1.1), no "+" selection marker on hover, larger file names (patches 0001–0011, overrides/kxmlgui).
