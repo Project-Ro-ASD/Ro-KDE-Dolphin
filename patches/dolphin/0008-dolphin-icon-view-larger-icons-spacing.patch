@@ -1,0 +1,41 @@
+From 17db998525fcb4eb5bf85f247c61608df6ed9de7 Mon Sep 17 00:00:00 2001
+From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
+Date: Thu, 8 Oct 2026 16:25:10 +0300
+Subject: [PATCH] Ro-ASD: larger icons and more spacing in the icon view
+
+---
+ src/settings/dolphin_iconsmodesettings.kcfg | 3 ++-
+ src/views/dolphinitemlistview.cpp           | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/settings/dolphin_iconsmodesettings.kcfg b/src/settings/dolphin_iconsmodesettings.kcfg
+index 7948af7..88a0e18 100644
+--- a/src/settings/dolphin_iconsmodesettings.kcfg
++++ b/src/settings/dolphin_iconsmodesettings.kcfg
+@@ -17,7 +17,8 @@
+         </entry>
+         <entry name="IconSize" type="Int">
+             <label>Icon size</label>
+-            <default code="true">KIconLoader::SizeMedium</default>
++            <!-- Ro-ASD default: 48 (upstream: KIconLoader::SizeMedium) -->
++            <default code="true">KIconLoader::SizeLarge</default>
+         </entry>
+         <entry name="PreviewSize" type="Int">
+             <label>Preview size</label>
+diff --git a/src/views/dolphinitemlistview.cpp b/src/views/dolphinitemlistview.cpp
+index af33157..b13f5ee 100644
+--- a/src/views/dolphinitemlistview.cpp
++++ b/src/views/dolphinitemlistview.cpp
+@@ -196,7 +196,8 @@ void DolphinItemListView::updateGridSize()
+     m_zoomLevel = ZoomLevelInfo::zoomLevelForIconSize(QSize(iconSize, iconSize));
+     KItemListStyleOption option = styleOption();
+ 
+-    const int padding = 2;
++    // Ro-ASD: more space around items in the icon view (upstream: 2 for all layouts).
++    const int padding = (itemLayout() == KFileItemListView::IconsLayout) ? 8 : 2;
+     int horizontalMargin = 0;
+     int verticalMargin = 0;
+ 
+-- 
+2.43.0
+
