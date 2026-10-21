@@ -47,7 +47,7 @@ Not planned: Ro-Theme keeps Breeze (see decisions). Kept for reference.
 
 - Monochrome outline icon set for toolbar, Places panel and file types (folder filled, files outline), as in the mockups.
 - App icon: rounded square in the Ro accent with a white folder.
-- Delivered as Ro Icons (Ro-Theme PR `feat/icons-dolphin`, release 1.1.0); icon names Dolphin uses are listed below.
+- Delivered as Ro Icons (Ro-Theme PR `feat/icons-dolphin`, release 1.1.0; menu icons in `feat/icons-dolphin-menus`); icon names Dolphin uses are listed below. Ro Icons now inherits Papirus.
 
 Dolphin ships no icons; it asks the system icon theme for these names (taken from Dolphin 26.08 source). A Ro-Theme icon theme with `Inherits=breeze` in `index.theme` can start with this list and fall back to Breeze for the rest. Monochrome icons should use the `ColorScheme-Text` stylesheet (`currentColor`) as Breeze does, so one set works in RoLight and RoDark.
 
@@ -61,6 +61,8 @@ Dolphin ships no icons; it asks the system icon theme for these names (taken fro
 | Places panel (drawn by KIO, check names there) | 16 | `user-home`, `user-desktop`, `folder-documents`, `folder-download`, `folder-music`, `folder-pictures`, `folder-videos`, `user-trash`, `user-trash-full`, `network-workgroup`, `document-open-recent`, `folder-open-recent`, `drive-harddisk`, `drive-removable-media`, `media-optical` |
 | File list: folders | 16-22 (details), 48 (icons) | `folder`, `folder-publicshare`, `folder-templates` and the special folders above |
 | File list: file types (from shared-mime-info) | 16-22, 48 | `text-plain`, `image-x-generic`, `audio-x-generic`, `video-x-generic`, `application-pdf`, `package-x-generic`, `application-x-rpm`, other MIME icons |
+| Context menu quick row (patch 0012) | 22 | `edit-cut`, `edit-copy`, `edit-rename`, `user-trash`, `edit-delete`, `folder-new`, `edit-paste`, `utilities-terminal-symbolic`, `view-visible`, `view-hidden` |
+| Context menu list (Dolphin, KIO and plugins) | 16 | `tab-new`, `window-new`, `view-split-left-right`, `system-run` (open with), `list-add` (create new), `edit-copy-path`, `edit-duplicate`, `bookmark-new`, `view-more-symbolic` (More Options and KIO's Actions), `document-properties`, `view-choose`, `view-sort`, `tag`, `archive-insert`, `unlock-symbolic` (kio-admin) |
 | App icon | all | `org.kde.dolphin` |
 
 Making the icon theme the default (`kdeglobals` `[Icons] Theme=`) belongs to Ro-Theme / ro-asd-defaults, not to Ro-KDE-Dolphin.
