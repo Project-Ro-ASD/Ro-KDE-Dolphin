@@ -1,19 +1,19 @@
-From 424bcf2ce128bb9a918c21c0ec325818622d79aa Mon Sep 17 00:00:00 2001
+From 54ae481dc1acd8654b308803832b45f2e42ddf02 Mon Sep 17 00:00:00 2001
 From: Afsarsyusuf <afsarsamiyusuf@gmail.com>
 Date: Wed, 21 Oct 2026 15:58:08 +0300
 Subject: [PATCH] Ro-ASD: context menus with a quick action row and More
  Options
 
 ---
- src/dolphincontextmenu.cpp | 300 ++++++++++++++++++++++++++++++-------
+ src/dolphincontextmenu.cpp | 302 ++++++++++++++++++++++++++++++-------
  src/dolphincontextmenu.h   |  10 +-
- 2 files changed, 251 insertions(+), 59 deletions(-)
+ 2 files changed, 253 insertions(+), 59 deletions(-)
 
 diff --git a/src/dolphincontextmenu.cpp b/src/dolphincontextmenu.cpp
-index b9b6edd..bf80772 100644
+index b9b6edd..6e1f724 100644
 --- a/src/dolphincontextmenu.cpp
 +++ b/src/dolphincontextmenu.cpp
-@@ -32,8 +32,133 @@
+@@ -32,8 +32,135 @@
  
  #include <QApplication>
  #include <QClipboard>
@@ -131,6 +131,8 @@ index b9b6edd..bf80772 100644
 +    });
 +    menu->addSeparator();
 +    if (hasEntries) {
++        // Submenu labels (KIO's Actions, Activities, ...) otherwise run into their arrow
++        more->setMinimumWidth(more->sizeHint().width() + 2 * more->fontMetrics().height());
 +        menu->addMenu(more);
 +    } else {
 +        delete more;
@@ -147,7 +149,7 @@ index b9b6edd..bf80772 100644
  
  DolphinContextMenu::DolphinContextMenu(DolphinMainWindow *parent,
                                         const KFileItem &fileInfo,
-@@ -216,6 +341,9 @@ void DolphinContextMenu::addDirectoryItemContextMenu()
+@@ -216,6 +343,9 @@ void DolphinContextMenu::addDirectoryItemContextMenu()
      // Insert 'Open With' entries
      addOpenWithActions();
  
@@ -157,7 +159,7 @@ index b9b6edd..bf80772 100644
      // set up 'Create New' menu
      QAction *newDirAction = m_mainWindow->actionCollection()->action(QStringLiteral("create_subdir"));
      QAction *newFileAction = m_mainWindow->actionCollection()->action(QStringLiteral("create_file"));
-@@ -236,8 +364,6 @@ void DolphinContextMenu::addDirectoryItemContextMenu()
+@@ -236,8 +366,6 @@ void DolphinContextMenu::addDirectoryItemContextMenu()
      menu->setTitle(i18nc("@title:menu Create new folder, file, link, etc.", "Create New"));
      menu->setIcon(QIcon::fromTheme(QStringLiteral("list-add")));
      addMenu(menu);
@@ -166,7 +168,7 @@ index b9b6edd..bf80772 100644
  }
  
  void DolphinContextMenu::addOpenParentFolderActions()
-@@ -272,6 +398,28 @@ void DolphinContextMenu::addItemContextMenu()
+@@ -272,6 +400,28 @@ void DolphinContextMenu::addItemContextMenu()
      // be situations where there are no selected items.
      m_fileItemActions->setItemListProperties(selectedItemsProps);
  
@@ -195,7 +197,7 @@ index b9b6edd..bf80772 100644
      if (m_selectedItems.count() == 1) {
          // single files
          if (m_fileInfo.isDir()) {
-@@ -311,8 +459,6 @@ void DolphinContextMenu::addItemContextMenu()
+@@ -311,8 +461,6 @@ void DolphinContextMenu::addItemContextMenu()
  
      insertDefaultItemActions(selectedItemsProps);
  
@@ -204,7 +206,7 @@ index b9b6edd..bf80772 100644
      // insert 'Copy To' and 'Move To' sub menus
      if (ContextMenuSettings::showCopyMoveMenu()) {
          m_copyToMenu.setUrls(m_selectedItems.urlList());
-@@ -331,8 +477,12 @@ void DolphinContextMenu::addItemContextMenu()
+@@ -331,8 +479,12 @@ void DolphinContextMenu::addItemContextMenu()
          }
      }
  
@@ -219,7 +221,7 @@ index b9b6edd..bf80772 100644
      QAction *propertiesAction = m_mainWindow->actionCollection()->action(QStringLiteral("properties"));
      addAction(propertiesAction);
  }
-@@ -341,6 +491,41 @@ void DolphinContextMenu::addViewportContextMenu()
+@@ -341,6 +493,41 @@ void DolphinContextMenu::addViewportContextMenu()
  {
      const KFileItemListProperties baseUrlProperties(KFileItemList() << baseFileItem());
      m_fileItemActions->setItemListProperties(baseUrlProperties);
@@ -261,7 +263,7 @@ index b9b6edd..bf80772 100644
  
      // Set up and insert 'Create New' menu
      KNewFileMenu *newFileMenu = m_mainWindow->newFileMenu();
-@@ -348,37 +533,29 @@ void DolphinContextMenu::addViewportContextMenu()
+@@ -348,37 +535,29 @@ void DolphinContextMenu::addViewportContextMenu()
      newFileMenu->setWorkingDirectory(m_baseUrl);
      addMenu(newFileMenu->menu());
  
@@ -316,7 +318,7 @@ index b9b6edd..bf80772 100644
      addAction(propertiesAction);
  }
  
-@@ -386,9 +563,10 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
+@@ -386,9 +565,10 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
  {
      const KActionCollection *collection = m_mainWindow->actionCollection();
  
@@ -330,7 +332,7 @@ index b9b6edd..bf80772 100644
      if (ContextMenuSettings::showCopyLocation()) {
          QAction *copyPathAction = collection->action(QStringLiteral("copy_location"));
          copyPathAction->setEnabled(m_selectedItems.size() == 1);
-@@ -404,34 +582,39 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
+@@ -404,34 +584,39 @@ void DolphinContextMenu::insertDefaultItemActions(const KFileItemListProperties
          addAction(m_mainWindow->actionCollection()->action(QStringLiteral("duplicate")));
      }
  
@@ -384,7 +386,7 @@ index b9b6edd..bf80772 100644
  }
  
  bool DolphinContextMenu::placeExists(const QUrl &url) const
-@@ -492,10 +675,10 @@ KFileItem DolphinContextMenu::baseFileItem()
+@@ -492,10 +677,10 @@ KFileItem DolphinContextMenu::baseFileItem()
      return *m_baseFileItem;
  }
  
@@ -397,7 +399,7 @@ index b9b6edd..bf80772 100644
  
      // For a single file, hint in "Open with" menu that middle-clicking would open it in the secondary app,
      // and shift + middle-clicking would open it in the third associated app.
-@@ -528,22 +711,25 @@ void DolphinContextMenu::addOpenWithActions()
+@@ -528,22 +713,25 @@ void DolphinContextMenu::addOpenWithActions()
      }
  }
  
