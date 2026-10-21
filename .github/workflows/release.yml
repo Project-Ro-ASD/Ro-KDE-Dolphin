@@ -72,7 +72,19 @@ jobs:
       - name: Install tools
         run: |
           dnf install -y git python3 gettext rpm-build rpmdevtools rpmlint createrepo_c \
-            dnf5-plugins kf6-rpm-macros
+            dnf5-plugins kf6-rpm-macros ccache tar zstd
+
+      # Dry runs reuse compiled objects from earlier dry runs of the same branch (or main).
+      # Tag releases never restore a cache: a published RPM is always built from scratch.
+      - name: Restore compiler cache (dry run only)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .ccache
+          key: ccache-fedora44-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            ccache-fedora44-${{ github.ref_name }}-
+            ccache-fedora44-main-
 
       - name: Patch and spec checks
         shell: bash
@@ -101,11 +113,23 @@ jobs:
           dnf builddep -y "$TOPDIR/SPECS/dolphin.spec"
 
       - name: Build RPM and SRPM
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
         run: |
           set -euo pipefail
-          rpmbuild -ba --define "_topdir $HOME/rpmbuild" --define "dist .fc44" \
+          EXTRA=()
+          if [[ "${DRY_RUN}" == "true" ]]; then
+            # ccache via CMake's compiler launcher (rpmbuild keeps the environment).
+            export CCACHE_DIR="$GITHUB_WORKSPACE/.ccache" CCACHE_BASEDIR="$HOME/rpmbuild/BUILD"
+            export CCACHE_MAXSIZE=2G CMAKE_C_COMPILER_LAUNCHER=ccache CMAKE_CXX_COMPILER_LAUNCHER=ccache
+            ccache -z
+            # Test builds skip the debuginfo split; Ro-Repo never takes debuginfo packages.
+            EXTRA+=(--define "debug_package %{nil}")
+          fi
+          rpmbuild -ba --define "_topdir $HOME/rpmbuild" --define "dist .fc44" "${EXTRA[@]}" \
             "$HOME/rpmbuild/SPECS/dolphin.spec"
+          if [[ "${DRY_RUN}" == "true" ]]; then ccache -s; fi
 
       - name: Collect and validate the exact package set
         env:
