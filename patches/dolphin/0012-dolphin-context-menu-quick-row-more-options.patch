@@ -51,7 +51,7 @@ index b9b6edd..6e1f724 100644
 +            painter.setBrush(QColor::fromRgbF(bg.redF() + (fg.redF() - bg.redF()) * mix,
 +                                              bg.greenF() + (fg.greenF() - bg.greenF()) * mix,
 +                                              bg.blueF() + (fg.blueF() - bg.blueF()) * mix));
-+            painter.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 6, 6);
++            painter.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 10, 10);
 +        }
 +        QToolButton::paintEvent(event);
 +    }
