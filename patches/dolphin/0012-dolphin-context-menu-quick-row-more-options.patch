@@ -41,17 +41,17 @@ index b9b6edd..6e1f724 100644
 +    void paintEvent(QPaintEvent *event) override
 +    {
 +        {
-+            // Tile = menu text color at 10 % opacity over the menu: a little lighter than the menu and as translucent
-+            // as it is, so it follows any color scheme and the Breeze menu opacity (an opaque tile looked black).
-+            // The 10 px radius is the Ro selected-item radius: concentric with the 16 px menu frame and its 6 px padding.
-+            // (Plain 6 px corners looked unrelated to the frame.)
++            // Tile = window color mixed with 10 % text at 80 % opacity: a little lighter than the menu and less
++            // translucent than it (menu opacity is the Breeze MenuOpacity), so it never looks black; follows any color scheme.
 +            QPainter painter(this);
 +            painter.setRenderHint(QPainter::Antialiasing);
 +            painter.setPen(Qt::NoPen);
-+            QColor tile = palette().windowText().color();
-+            tile.setAlphaF(0.10);
++            const QColor bg = palette().window().color();
++            const QColor fg = palette().windowText().color();
++            QColor tile = QColor::fromRgbF(bg.redF() + (fg.redF() - bg.redF()) * 0.10, bg.greenF() + (fg.greenF() - bg.greenF()) * 0.10, bg.blueF() + (fg.blueF() - bg.blueF()) * 0.10);
++            tile.setAlphaF(0.80);
 +            painter.setBrush(tile);
-+            painter.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 10, 10);
++            painter.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 12, 12);
 +        }
 +        QToolButton::paintEvent(event);
 +    }
@@ -68,7 +68,7 @@ index b9b6edd..6e1f724 100644
 +{
 +    auto *row = new QWidget(menu);
 +    auto *layout = new QHBoxLayout(row);
-+    layout->setContentsMargins(4, 2, 4, 4);
++    layout->setContentsMargins(0, 2, 0, 4);
 +    layout->setSpacing(4);
 +    int count = 0;
 +    for (const RoQuickEntry &entry : entries) {
