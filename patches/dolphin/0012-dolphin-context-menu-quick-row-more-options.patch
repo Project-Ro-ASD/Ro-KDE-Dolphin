@@ -10,7 +10,7 @@ Subject: [PATCH] Ro-ASD: context menus with a quick action row and More
  2 files changed, 253 insertions(+), 59 deletions(-)
 
 diff --git a/src/dolphincontextmenu.cpp b/src/dolphincontextmenu.cpp
-index b9b6edd..9b29f32 100644
+index b9b6edd..4032953 100644
 --- a/src/dolphincontextmenu.cpp
 +++ b/src/dolphincontextmenu.cpp
 @@ -19,6 +19,7 @@
@@ -54,17 +54,17 @@ index b9b6edd..9b29f32 100644
 +    void paintEvent(QPaintEvent *event) override
 +    {
 +        {
-+            // Tile = window color mixed with 10 % text, 5 points more opaque than the menu: a little lighter than the menu and less
-+            // translucent than it (menu opacity is the Breeze MenuOpacity), so it never looks black; follows any color scheme.
++            // Tile = window color mixed with 10 % text, painted over the (translucent) menu at 40 % own opacity: the two layers add up,
++            // so the tile area is less see-through than the menu around it but never black; opaque menus get an opaque tile.
 +            QPainter painter(this);
 +            painter.setRenderHint(QPainter::Antialiasing);
 +            painter.setPen(Qt::NoPen);
-+            // Breeze MenuOpacity (system /etc/xdg/breezerc, user ~/.config/breezerc), read once; the tile is 5 points more opaque.
++            // Breeze MenuOpacity (system /etc/xdg/breezerc, user ~/.config/breezerc), read once; only used to tell opaque menus apart.
 +            static const qreal menuOpacity = KSharedConfig::openConfig(QStringLiteral("breezerc"))->group(QStringLiteral("Style")).readEntry("MenuOpacity", 100) / 100.0;
 +            const QColor bg = palette().window().color();
 +            const QColor fg = palette().windowText().color();
 +            QColor tile = QColor::fromRgbF(bg.redF() + (fg.redF() - bg.redF()) * 0.10, bg.greenF() + (fg.greenF() - bg.greenF()) * 0.10, bg.blueF() + (fg.blueF() - bg.blueF()) * 0.10);
-+            tile.setAlphaF(qMin<qreal>(1.0, menuOpacity + 0.05));
++            tile.setAlphaF(menuOpacity >= 0.95 ? 1.0 : 0.40);
 +            painter.setBrush(tile);
 +            painter.drawRoundedRect(QRectF(rect()).adjusted(0.5, 0.5, -0.5, -0.5), 12, 12);
 +        }
