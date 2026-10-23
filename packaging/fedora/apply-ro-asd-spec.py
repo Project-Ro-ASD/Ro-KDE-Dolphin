@@ -14,7 +14,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-RELEASE_TAG = "roasd4"
+RELEASE_TAG = "roasd5"
 
 
 def rpm_date():
