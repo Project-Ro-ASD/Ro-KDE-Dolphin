@@ -6,10 +6,10 @@
 - Affected upstream files:
   - src/settings/dolphin_generalsettings.kcfg (ShowStatusBar)
   - src/settings/dolphin_contentdisplaysettings.kcfg (DirectorySizeMode, UseShortRelativeDates)
-  - src/settings/dolphin_directoryviewpropertysettings.kcfg (ViewMode, PreviewsShown, VisibleRoles)
+  - src/settings/dolphin_directoryviewpropertysettings.kcfg (ViewMode, VisibleRoles; PreviewsShown stays at the upstream default true)
 - Layer: settings defaults only. No code paths change.
 - Reason (Ro-ASD): built-in defaults for the Ro-ASD design, decided in docs/DEFAULTS.md. Avoids /etc/skel and first-login scripts; user settings always override.
 - Override considered: /etc/xdg/dolphinrc cannot provide view properties (stored per user as xattr), so all Dolphin defaults live in kcfg for one consistent mechanism.
 - Upstreamable: no, distribution-specific.
-- Verification: built against v26.08.1 + 0001-0003, ran build/bin/dolphin with empty XDG_CONFIG_HOME and XDG_DATA_HOME; opens in details view without previews, columns Name/Modified/Size/Type, absolute dates, "—" for folder size, full-width status bar.
+- Verification: built against v26.08.1 + 0001-0003, ran build/bin/dolphin with empty XDG_CONFIG_HOME and XDG_DATA_HOME; opens in details view with file previews on, columns Name/Modified/Size/Type, absolute dates, "—" for folder size, full-width status bar.
 - Upgrade risk: low. On each Dolphin release check that the six kcfg entries still exist with the same names.

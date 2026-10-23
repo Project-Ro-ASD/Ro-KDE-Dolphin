@@ -23,7 +23,7 @@ Resulting behavior: Ro-ASD built-in default, then the user's own dolphinrc / xat
 | DirectorySizeMode | dolphin_contentdisplaysettings.kcfg | ContentCount | None | "—" for folders (patch 0001) |
 | UseShortRelativeDates | dolphin_contentdisplaysettings.kcfg | true | false | absolute dates |
 | ViewMode | dolphin_directoryviewpropertysettings.kcfg | Icons | Details | details view |
-| PreviewsShown | dolphin_directoryviewpropertysettings.kcfg | true | false | small monochrome icons |
+| PreviewsShown | dolphin_directoryviewpropertysettings.kcfg | true | true (not patched) | thumbnails for images, video, audio covers, documents and folder contents (issue #25) |
 | VisibleRoles | dolphin_directoryviewpropertysettings.kcfg | empty (size, date) | Modified, Size, Type | design column order |
 | IconSize (IconsMode) | dolphin_iconsmodesettings.kcfg | 32 | 48 | larger icons in the icon view (patch 0008) |
 | ShowSelectionToggle | dolphin_generalsettings.kcfg | true | false | no hover "+" marker (patch 0010) |

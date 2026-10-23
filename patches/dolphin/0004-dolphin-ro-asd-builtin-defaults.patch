@@ -5,9 +5,9 @@ Subject: [PATCH] Ro-ASD: built-in defaults for view and status bar
 
 ---
  src/settings/dolphin_contentdisplaysettings.kcfg        | 6 ++++--
- src/settings/dolphin_directoryviewpropertysettings.kcfg | 9 ++++++---
+ src/settings/dolphin_directoryviewpropertysettings.kcfg | 6 ++++--
  src/settings/dolphin_generalsettings.kcfg               | 3 ++-
- 3 files changed, 12 insertions(+), 6 deletions(-)
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
 diff --git a/src/settings/dolphin_contentdisplaysettings.kcfg b/src/settings/dolphin_contentdisplaysettings.kcfg
 index 6e8f8e9d5..dc0321111 100644
@@ -47,17 +47,7 @@ index 9719ba602..fbea15f64 100644
          </entry>
  
          <entry name="ZoomLevel" type="Int" >
-@@ -36,7 +37,8 @@
-         <entry name="PreviewsShown" type="Bool" >
-             <label context="@label">Previews shown</label>
-             <whatsthis context="@info:whatsthis">When this option is enabled, a preview of the file content is shown as an icon.</whatsthis>
--            <default>true</default>
-+            <!-- Ro-ASD default: false (upstream: true) -->
-+            <default>false</default>
-         </entry>
- 
-         <entry name="GroupedSorting" type="Bool" >
-@@ -76,7 +78,8 @@
+@@ -76,7 +77,8 @@
  
          <entry name="VisibleRoles" type="StringList">
              <label context="@label">Visible roles</label>
